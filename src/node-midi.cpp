@@ -1,59 +1,94 @@
 #include <v8.h>
 #include <node.h>
 
+#include "lib/RtMidi/RtMidi.h"
+#include "lib/RtMidi/Rtmidi.cpp"
+
 using namespace node;
-using namespace v8;
+
+#define SAFE_NODE_SET_PROTOTYPE_METHOD(templ, name, callback)             \
+do {                                                                      \
+  v8::Local<v8::Signature> __callback##_SIG = v8::Signature::New(templ);  \
+  v8::Local<v8::FunctionTemplate> __callback##_TEM =                      \
+    v8::FunctionTemplate::New(callback, v8::Handle<v8::Value>(),          \
+                          __callback##_SIG);                              \
+  templ->PrototypeTemplate()->Set(v8::String::NewSymbol(name),            \
+                                  __callback##_TEM);                      \
+} while (0)
 
 class NodeMidiOutput : ObjectWrap
 {
 private:
+    RtMidiOut* out;
 public:
-    static Persistent<FunctionTemplate> s_ct;
-    static void Init(Handle<Object> target)
+    static v8::Persistent<v8::FunctionTemplate> s_ct;
+    static void Init(v8::Handle<v8::Object> target)
     {
-        HandleScope scope;
+        v8::HandleScope scope;
         
-        Local<FunctionTemplate> t = FunctionTemplate::New(New);
+        v8::Local<v8::FunctionTemplate> t = v8::FunctionTemplate::New(New);
         
-        s_ct = Persistent<FunctionTemplate>::New(t);
+        s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
         s_ct->InstanceTemplate()->SetInternalFieldCount(1);
-        s_ct->SetClassName(String::NewSymbol("NodeMidiOutput"));
+        s_ct->SetClassName(v8::String::NewSymbol("NodeMidiOutput"));
         
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "send", Send);
+        SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortCount", GetPortCount);
+        SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortName", GetPortName);
         
-        target->Set(String::NewSymbol("output"),
+        target->Set(v8::String::NewSymbol("output"),
                     s_ct->GetFunction());
     }
     
     NodeMidiOutput()
     {
+        out = new RtMidiOut();
     }
     
     ~NodeMidiOutput()
     {
+        delete out;
     }
     
-    static Handle<Value> New(const Arguments& args)
+    unsigned int getPortCount()
     {
-        HandleScope scope;
+        return out->getPortCount();
+    }
+    
+    std::string getPortName(unsigned int portNumber = 0)
+    {
+        return out->getPortName(portNumber);
+    }
+    
+    static v8::Handle<v8::Value> New(const v8::Arguments& args)
+    {
+        v8::HandleScope scope;
         NodeMidiOutput* output = new NodeMidiOutput();
         output->Wrap(args.This());
         return args.This();
     }
     
-    static Handle<Value> Send(const Arguments& args)
+    static v8::Handle<v8::Value> GetPortCount(const v8::Arguments& args)
     {
-        HandleScope scope;
+        v8::HandleScope scope;
         NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
-        return Boolean::New(true);
+        v8::Local<v8::Integer> result = v8::Integer::New(output->getPortCount());
+        return scope.Close(result);
+    }
+    
+    static v8::Handle<v8::Value> GetPortName(const v8::Arguments& args)
+    {
+        v8::HandleScope scope;
+        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        v8::Local<v8::String> result = v8::String::New(output->getPortName().c_str());
+        return scope.Close(result);
     }
     
 };
 
-Persistent<FunctionTemplate> NodeMidiOutput::s_ct;
+v8::Persistent<v8::FunctionTemplate> NodeMidiOutput::s_ct;
 
 extern "C" {
-    void init (Handle<Object> target)
+    void init (v8::Handle<v8::Object> target)
     {
         NodeMidiOutput::Init(target);
     }

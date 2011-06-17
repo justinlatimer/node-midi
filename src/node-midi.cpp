@@ -48,17 +48,7 @@ public:
     {
         delete out;
     }
-    
-    unsigned int getPortCount()
-    {
-        return out->getPortCount();
-    }
-    
-    std::string getPortName(unsigned int portNumber = 0)
-    {
-        return out->getPortName(portNumber);
-    }
-    
+
     static v8::Handle<v8::Value> New(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -71,7 +61,7 @@ public:
     {
         v8::HandleScope scope;
         NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
-        v8::Local<v8::Integer> result = v8::Uint32::New(output->getPortCount());
+        v8::Local<v8::Integer> result = v8::Uint32::New(output->out->getPortCount());
         return scope.Close(result);
     }
     
@@ -85,7 +75,7 @@ public:
                 v8::String::New("First argument must be an integer")));
         }
         unsigned int portNumber = args[0]->Uint32Value();
-        v8::Local<v8::String> result = v8::String::New(output->getPortName(portNumber).c_str());
+        v8::Local<v8::String> result = v8::String::New(output->out->getPortName(portNumber).c_str());
         return scope.Close(result);
     }
     

@@ -35,6 +35,9 @@ public:
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortCount", GetPortCount);
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortName", GetPortName);
         
+        SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "openPort", OpenPort);
+        SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "closePort", ClosePort);
+        
         target->Set(v8::String::NewSymbol("output"),
                     s_ct->GetFunction());
     }
@@ -77,6 +80,35 @@ public:
         unsigned int portNumber = args[0]->Uint32Value();
         v8::Local<v8::String> result = v8::String::New(output->out->getPortName(portNumber).c_str());
         return scope.Close(result);
+    }
+    
+    static v8::Handle<v8::Value> OpenPort(const v8::Arguments& args)
+    {
+        v8::HandleScope scope;
+        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        
+        if (args.Length() == 0 || !args[0]->IsUint32()) {
+            return ThrowException(v8::Exception::TypeError(
+                v8::String::New("First argument must be an integer")));
+        }
+        unsigned int portNumber = args[0]->Uint32Value();
+        output->out->openPort(portNumber);
+        
+        std::vector<unsigned char> message;
+        message.push_back(176);
+        message.push_back(7);
+        message.push_back(100);
+        output->out->sendMessage(&message);
+        
+        return v8::Boolean::New(true);
+    }
+    
+    static v8::Handle<v8::Value> ClosePort(const v8::Arguments& args)
+    {
+        v8::HandleScope scope;
+        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        output->out->closePort();
+        return v8::Boolean::New(true);
     }
     
 };

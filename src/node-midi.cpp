@@ -71,7 +71,7 @@ public:
     {
         v8::HandleScope scope;
         NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
-        v8::Local<v8::Integer> result = v8::Integer::New(output->getPortCount());
+        v8::Local<v8::Integer> result = v8::Uint32::New(output->getPortCount());
         return scope.Close(result);
     }
     
@@ -79,7 +79,13 @@ public:
     {
         v8::HandleScope scope;
         NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
-        v8::Local<v8::String> result = v8::String::New(output->getPortName().c_str());
+        
+        if (args.Length() == 0 || !args[0]->IsUint32()) {
+            return ThrowException(v8::Exception::TypeError(
+                v8::String::New("First argument must be an integer")));
+        }
+        unsigned int portNumber = args[0]->Uint32Value();
+        v8::Local<v8::String> result = v8::String::New(output->getPortName(portNumber).c_str());
         return scope.Close(result);
     }
     

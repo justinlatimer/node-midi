@@ -1,0 +1,15 @@
+{
+  "name": "midi",
+  "version": "v0.1.0",
+  "scripts": {
+    "preinstall": "node-waf configure && node-waf build",
+    "preuninstall": "rm -rf build/*"
+  },
+  "main": "build/default/midi.node",
+  "description": "MIDI hardware IO",
+  "author": { 
+    "name" : "Justin Latimer",
+    "email" : "justin@doublemu.com",
+    "url" : "http://www.justinlatimer.com/"
+  }
+}

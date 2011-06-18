@@ -94,7 +94,7 @@ public:
         }
         unsigned int portNumber = args[0]->Uint32Value();
         output->out->openPort(portNumber);
-        return v8::Boolean::New(true);
+        return scope.Close(v8::Boolean::New(true));
     }
     
     static v8::Handle<v8::Value> ClosePort(const v8::Arguments& args)
@@ -102,7 +102,7 @@ public:
         v8::HandleScope scope;
         NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         output->out->closePort();
-        return v8::Boolean::New(true);
+        return scope.Close(v8::Boolean::New(true));
     }
     
     static v8::Handle<v8::Value> SendMessage(const v8::Arguments& args)
@@ -119,7 +119,7 @@ public:
         message.push_back(7);
         message.push_back(value);
         output->out->sendMessage(&message);
-        return v8::Boolean::New(true);
+        return scope.Close(v8::Boolean::New(true));
     }
     
 };

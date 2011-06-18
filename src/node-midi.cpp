@@ -87,7 +87,6 @@ public:
     {
         v8::HandleScope scope;
         NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
-        
         if (args.Length() == 0 || !args[0]->IsUint32()) {
             return ThrowException(v8::Exception::TypeError(
                 v8::String::New("First argument must be an integer")));

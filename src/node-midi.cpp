@@ -1,5 +1,6 @@
 #include <v8.h>
 #include <node.h>
+#include <node_events.h>
 
 #include "lib/RtMidi/RtMidi.h"
 #include "lib/RtMidi/RtMidi.cpp"
@@ -124,11 +125,15 @@ public:
     
 };
 
-class NodeMidiInput : ObjectWrap
+static v8::Persistent<v8::String> message_symbol;
+
+class NodeMidiInput : public EventEmitter
 {
 private:
     RtMidiIn* in;
 public:
+    ev_async* message_async;
+    
     static v8::Persistent<v8::FunctionTemplate> s_ct;
     static void Init(v8::Handle<v8::Object> target)
     {
@@ -137,7 +142,11 @@ public:
         v8::Local<v8::FunctionTemplate> t = v8::FunctionTemplate::New(New);
         
         s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
+        s_ct->Inherit(EventEmitter::constructor_template);
         s_ct->InstanceTemplate()->SetInternalFieldCount(1);
+        
+        message_symbol = v8::Persistent<v8::String>::New(v8::String::NewSymbol("message"));
+        
         s_ct->SetClassName(v8::String::NewSymbol("NodeMidiInput"));
         
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortCount", GetPortCount);
@@ -153,17 +162,38 @@ public:
     NodeMidiInput()
     {
         in = new RtMidiIn();
+        message_async = new ev_async();
     }
     
     ~NodeMidiInput()
     {
+        in->closePort();
+        ev_async_stop(EV_DEFAULT_UC_ message_async);
+        delete message_async;
         delete in;
+    }
+    
+    static void EmitMessage(EV_P_ ev_async *w, int revents)
+    {
+        v8::HandleScope scope;
+        NodeMidiInput *input = static_cast<NodeMidiInput*>(w->data);
+        input->Emit(message_symbol, 0, NULL);
+    }
+    
+    static void Callback(double deltaTime, std::vector<unsigned char> *message, void *userData)
+    {
+        NodeMidiInput *input = static_cast<NodeMidiInput*>(userData);
+        ev_async_send(EV_DEFAULT_UC_ input->message_async);
     }
     
     static v8::Handle<v8::Value> New(const v8::Arguments& args)
     {
         v8::HandleScope scope;
         NodeMidiInput* input = new NodeMidiInput();
+        input->message_async->data = input;
+        ev_async_init(input->message_async, NodeMidiInput::EmitMessage);
+        ev_async_start(EV_DEFAULT_UC_ input->message_async);
+        ev_unref(EV_DEFAULT_UC);
         input->Wrap(args.This());
         return args.This();
     }
@@ -198,6 +228,8 @@ public:
                 v8::String::New("First argument must be an integer")));
         }
         unsigned int portNumber = args[0]->Uint32Value();
+        input->Ref();
+        input->in->setCallback(&NodeMidiInput::Callback, ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
         input->in->openPort(portNumber);
         return scope.Close(v8::Boolean::New(true));
     }
@@ -206,6 +238,7 @@ public:
     {
         v8::HandleScope scope;
         NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        input->Unref();
         input->in->closePort();
         return scope.Close(v8::Boolean::New(true));
     }

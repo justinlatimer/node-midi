@@ -133,6 +133,14 @@ private:
     RtMidiIn* in;
 public:
     ev_async* message_async;
+    pthread_mutex_t message_mutex;
+    
+    struct MidiMessage
+    {
+        double deltaTime;
+        std::vector<unsigned char> message;
+    };
+    std::queue<MidiMessage*> message_queue;
     
     static v8::Persistent<v8::FunctionTemplate> s_ct;
     static void Init(v8::Handle<v8::Object> target)
@@ -162,6 +170,7 @@ public:
     NodeMidiInput()
     {
         in = new RtMidiIn();
+        pthread_mutex_init(&message_mutex, NULL);
         message_async = new ev_async();
     }
     
@@ -171,18 +180,41 @@ public:
         ev_async_stop(EV_DEFAULT_UC_ message_async);
         delete message_async;
         delete in;
+        pthread_mutex_destroy(&message_mutex);
     }
     
     static void EmitMessage(EV_P_ ev_async *w, int revents)
     {
         v8::HandleScope scope;
         NodeMidiInput *input = static_cast<NodeMidiInput*>(w->data);
-        input->Emit(message_symbol, 0, NULL);
+        pthread_mutex_lock(&input->message_mutex);
+        while (!input->message_queue.empty())
+        {
+            MidiMessage* message = input->message_queue.front();
+            v8::Local<v8::Value> args[2];
+            args[0] = v8::Local<v8::Value>::New(v8::Number::New(message->deltaTime));
+            size_t count = message->message.size();
+            v8::Local<v8::Array> data = v8::Array::New(count);
+            for (size_t i = 0; i < count; ++i) { 
+                data->Set(v8::Number::New(i), v8::Integer::New(message->message[i])); 
+            }
+            args[1] = v8::Local<v8::Value>::New(data);
+            input->Emit(message_symbol, 2, args);
+            input->message_queue.pop();
+            delete message;
+        }
+        pthread_mutex_unlock(&input->message_mutex);
     }
     
     static void Callback(double deltaTime, std::vector<unsigned char> *message, void *userData)
     {
         NodeMidiInput *input = static_cast<NodeMidiInput*>(userData);
+        MidiMessage* data = new MidiMessage();
+        data->deltaTime = deltaTime;
+        data->message = *message;
+        pthread_mutex_lock(&input->message_mutex);
+        input->message_queue.push(data);
+        pthread_mutex_unlock(&input->message_mutex);
         ev_async_send(EV_DEFAULT_UC_ input->message_async);
     }
     

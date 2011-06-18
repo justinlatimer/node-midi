@@ -2,7 +2,7 @@
 #include <node.h>
 
 #include "lib/RtMidi/RtMidi.h"
-#include "lib/RtMidi/Rtmidi.cpp"
+#include "lib/RtMidi/RtMidi.cpp"
 
 using namespace node;
 

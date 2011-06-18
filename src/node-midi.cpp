@@ -109,16 +109,17 @@ public:
     {
         v8::HandleScope scope;
         NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
-        if (args.Length() == 0 || !args[0]->IsUint32()) {
+        if (args.Length() == 0 || !args[0]->IsArray()) {
             return ThrowException(v8::Exception::TypeError(
-                v8::String::New("First argument must be an integer")));
+                v8::String::New("First argument must be an array")));
         }
-        unsigned int value = args[0]->Uint32Value();
-        std::vector<unsigned char> message;
-        message.push_back(176);
-        message.push_back(7);
-        message.push_back(value);
-        output->out->sendMessage(&message);
+        v8::Local<v8::Object> message = args[0]->ToObject();
+        size_t messageLength = message->Get(v8::String::New("length"))->Int32Value();
+        std::vector<unsigned char> messageOutput;
+        for (size_t i = 0; i != messageLength; ++i) {
+            messageOutput.push_back(message->Get(v8::Integer::New(i))->Int32Value());
+        }
+        output->out->sendMessage(&messageOutput);
         return scope.Close(v8::Boolean::New(true));
     }
     

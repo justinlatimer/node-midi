@@ -11,5 +11,9 @@
     "name" : "Justin Latimer",
     "email" : "justin@doublemu.com",
     "url" : "http://www.justinlatimer.com/"
+  },
+  "repository" : { 
+    "type" : "git",
+    "url" : "https://github.com/justinlatimer/node-midi.git"
   }
 }

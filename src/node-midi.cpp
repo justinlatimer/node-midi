@@ -37,6 +37,7 @@ public:
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortName", GetPortName);
         
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "openPort", OpenPort);
+        SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "openVirtualPort", OpenVirtualPort);
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "closePort", ClosePort);
         
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "sendMessage", SendMessage);
@@ -94,6 +95,19 @@ public:
         }
         unsigned int portNumber = args[0]->Uint32Value();
         output->out->openPort(portNumber);
+        return scope.Close(v8::Boolean::New(true));
+    }
+    
+    static v8::Handle<v8::Value> OpenVirtualPort(const v8::Arguments& args)
+    {
+        v8::HandleScope scope;
+        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        if (args.Length() == 0 || !args[0]->IsString()) {
+            return ThrowException(v8::Exception::TypeError(
+                v8::String::New("First argument must be a string")));
+        }
+        std::string name(*v8::String::AsciiValue(args[0]));
+        output->out->openVirtualPort(name);
         return scope.Close(v8::Boolean::New(true));
     }
     

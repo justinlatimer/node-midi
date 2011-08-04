@@ -175,6 +175,7 @@ public:
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortName", GetPortName);
         
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "openPort", OpenPort);
+        SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "openVirtualPort", OpenVirtualPort);
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "closePort", ClosePort);
         
         target->Set(v8::String::NewSymbol("input"),
@@ -277,6 +278,21 @@ public:
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
         input->in->openPort(portNumber);
+        return scope.Close(v8::Boolean::New(true));
+    }
+    
+    static v8::Handle<v8::Value> OpenVirtualPort(const v8::Arguments& args)
+    {
+        v8::HandleScope scope;
+        NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        if (args.Length() == 0 || !args[0]->IsString()) {
+            return ThrowException(v8::Exception::TypeError(
+                v8::String::New("First argument must be a string")));
+        }
+        std::string name(*v8::String::AsciiValue(args[0]));
+        input->Ref();
+        input->in->setCallback(&NodeMidiInput::Callback, ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
+        input->in->openVirtualPort(name);
         return scope.Close(v8::Boolean::New(true));
     }
     

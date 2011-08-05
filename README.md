@@ -60,6 +60,36 @@ Output:
     // Close the port when done.
     output.closePort();
 
+Virtual Ports:
+
+Instead of opening a connection to an existing MIDI device, on Mac OS X and
+Linux with ALSA you can create a virtual device that other software may 
+connect to. This can be done simply by calling openVirtualPort(portName) instead
+of openPort(portNumber).
+
+	var midi = require('midi');
+	
+	// Set up a new input.
+    var input = new midi.input();
+    
+    // Configure a callback.
+    input.on('message', function(deltaTime, message) {
+	  console.log('m:' + message + ' d:' + deltaTime);
+    }); 
+        
+    // Create a virtual input port.
+    input.openVirtualPort("Test Input");
+    
+    // A midi device "Test Input" is now available for other
+    // software to send messages to.
+    
+    // ... receive MIDI messages ...
+    
+    // Close the port when done.
+    input.closePort();
+
+The same can be done with output ports.
+
 ## References
 
   * http://music.mcgill.ca/~gary/rtmidi/

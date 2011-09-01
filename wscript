@@ -18,5 +18,5 @@ def build(bld):
     obj.cxxflags.append("-D__MACOSX_CORE__")
   else:
     obj.cxxflags.append("-D__LINUX_ALSASEQ__")
-  obj.target = "midi"
+  obj.target = "midi_addon"
   obj.source = "src/node-midi.cpp"

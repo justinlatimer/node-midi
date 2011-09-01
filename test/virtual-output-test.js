@@ -1,4 +1,4 @@
-var midi = require("../build/default/midi.node");
+var midi = require("../midi.js");
 
 var output = new midi.output();
 output.openVirtualPort("node-midi Virtual Output");

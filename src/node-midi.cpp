@@ -328,7 +328,7 @@ public:
         int filter_timing = args[1]->BooleanValue();
         int filter_sensing = args[2]->BooleanValue();
         input->in->ignoreTypes(filter_sysex,filter_timing,filter_sensing);
-        return scope.Close(v8::Boolean::New(true));
+        return scope.Close(v8::Undefined());
     }
 };
 

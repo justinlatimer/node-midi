@@ -1,6 +1,7 @@
 #include <v8.h>
 #include <node.h>
-#include <node_events.h>
+#include <node_object_wrap.h>
+#include <queue>
 
 #include "lib/RtMidi/RtMidi.h"
 #include "lib/RtMidi/RtMidi.cpp"
@@ -136,15 +137,15 @@ public:
         output->out->sendMessage(&messageOutput);
         return scope.Close(v8::Boolean::New(true));
     }
-    
 };
 
-static v8::Persistent<v8::String> message_symbol;
+static v8::Persistent<v8::String> emit_symbol;
 
-class NodeMidiInput : public EventEmitter
+class NodeMidiInput : public ObjectWrap
 {
 private:
     RtMidiIn* in;
+
 public:
     ev_async* message_async;
     pthread_mutex_t message_mutex;
@@ -164,10 +165,9 @@ public:
         v8::Local<v8::FunctionTemplate> t = v8::FunctionTemplate::New(New);
         
         s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
-        s_ct->Inherit(EventEmitter::constructor_template);
         s_ct->InstanceTemplate()->SetInternalFieldCount(1);
         
-        message_symbol = v8::Persistent<v8::String>::New(v8::String::NewSymbol("message"));
+        emit_symbol = NODE_PSYMBOL("emit");
         
         s_ct->SetClassName(v8::String::NewSymbol("NodeMidiInput"));
         
@@ -178,6 +178,8 @@ public:
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "openVirtualPort", OpenVirtualPort);
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "closePort", ClosePort);
         
+        SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "ignoreTypes", IgnoreTypes);
+
         target->Set(v8::String::NewSymbol("input"),
                     s_ct->GetFunction());
     }
@@ -206,15 +208,24 @@ public:
         while (!input->message_queue.empty())
         {
             MidiMessage* message = input->message_queue.front();
-            v8::Local<v8::Value> args[2];
-            args[0] = v8::Local<v8::Value>::New(v8::Number::New(message->deltaTime));
+            v8::Local<v8::Value> args[3];
+            args[0]= v8::String::New("message");
+            args[1] = v8::Local<v8::Value>::New(v8::Number::New(message->deltaTime));
             size_t count = message->message.size();
             v8::Local<v8::Array> data = v8::Array::New(count);
             for (size_t i = 0; i < count; ++i) { 
                 data->Set(v8::Number::New(i), v8::Integer::New(message->message[i])); 
             }
-            args[1] = v8::Local<v8::Value>::New(data);
-            input->Emit(message_symbol, 2, args);
+            args[2] = v8::Local<v8::Value>::New(data);
+            v8::Local<v8::Value> emit_v = input->handle_->Get(emit_symbol);
+            if (emit_v->IsFunction()) {
+                v8::Local<v8::Function> emit=v8::Local<v8::Function>::Cast(emit_v);
+                v8::TryCatch tc;
+                emit->Call(input->handle_,3,args);
+                if (tc.HasCaught()){
+                    node::FatalException(tc);
+               }
+            }
             input->message_queue.pop();
             delete message;
         }
@@ -304,7 +315,21 @@ public:
         input->in->closePort();
         return scope.Close(v8::Boolean::New(true));
     }
-    
+
+    static v8::Handle<v8::Value> IgnoreTypes(const v8::Arguments& args)
+    {
+        v8::HandleScope scope;
+        NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        if (args.Length() != 3 || !args[0]->IsBoolean() || !args[1]->IsBoolean() || !args[2]->IsBoolean()) {
+            return ThrowException(v8::Exception::TypeError(
+                v8::String::New("Arguments must be boolean")));
+        }
+        int filter_sysex = args[0]->BooleanValue();
+        int filter_timing = args[1]->BooleanValue();
+        int filter_sensing = args[2]->BooleanValue();
+        input->in->ignoreTypes(filter_sysex,filter_timing,filter_sensing);
+        return scope.Close(v8::Undefined());
+    }
 };
 
 v8::Persistent<v8::FunctionTemplate> NodeMidiOutput::s_ct;

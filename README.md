@@ -32,6 +32,9 @@ Input:
         
     // Open the first available input port.
     input.openPort(0);
+
+    // Don't ignore sysex, timing, or active sensing messages.
+    input.ignoreTypes( false, false, false );
     
     // ... receive MIDI messages ...
     

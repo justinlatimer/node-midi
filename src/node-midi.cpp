@@ -137,7 +137,6 @@ public:
         output->out->sendMessage(&messageOutput);
         return scope.Close(v8::Boolean::New(true));
     }
-    
 };
 
 static v8::Persistent<v8::String> emit_symbol;
@@ -179,6 +178,8 @@ public:
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "openVirtualPort", OpenVirtualPort);
         SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "closePort", ClosePort);
         
+        SAFE_NODE_SET_PROTOTYPE_METHOD(s_ct, "ignoreTypes", IgnoreTypes);
+
         target->Set(v8::String::NewSymbol("input"),
                     s_ct->GetFunction());
     }
@@ -314,7 +315,21 @@ public:
         input->in->closePort();
         return scope.Close(v8::Boolean::New(true));
     }
-    
+
+    static v8::Handle<v8::Value> IgnoreTypes(const v8::Arguments& args)
+    {
+        v8::HandleScope scope;
+        NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        if (args.Length() != 3 || !args[0]->IsBoolean() || !args[1]->IsBoolean() || !args[2]->IsBoolean()) {
+            return ThrowException(v8::Exception::TypeError(
+                v8::String::New("Arguments must be boolean")));
+        }
+        int filter_sysex = args[0]->BooleanValue();
+        int filter_timing = args[1]->BooleanValue();
+        int filter_sensing = args[2]->BooleanValue();
+        input->in->ignoreTypes(filter_sysex,filter_timing,filter_sensing);
+        return scope.Close(v8::Boolean::New(true));
+    }
 };
 
 v8::Persistent<v8::FunctionTemplate> NodeMidiOutput::s_ct;

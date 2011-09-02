@@ -96,7 +96,7 @@ public:
         }
         unsigned int portNumber = args[0]->Uint32Value();
         output->out->openPort(portNumber);
-        return scope.Close(v8::Boolean::New(true));
+        return scope.Close(v8::Undefined());
     }
     
     static v8::Handle<v8::Value> OpenVirtualPort(const v8::Arguments& args)
@@ -109,7 +109,7 @@ public:
         }
         std::string name(*v8::String::AsciiValue(args[0]));
         output->out->openVirtualPort(name);
-        return scope.Close(v8::Boolean::New(true));
+        return scope.Close(v8::Undefined());
     }
     
     static v8::Handle<v8::Value> ClosePort(const v8::Arguments& args)
@@ -117,7 +117,7 @@ public:
         v8::HandleScope scope;
         NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         output->out->closePort();
-        return scope.Close(v8::Boolean::New(true));
+        return scope.Close(v8::Undefined());
     }
     
     static v8::Handle<v8::Value> SendMessage(const v8::Arguments& args)
@@ -135,7 +135,7 @@ public:
             messageOutput.push_back(message->Get(v8::Integer::New(i))->Int32Value());
         }
         output->out->sendMessage(&messageOutput);
-        return scope.Close(v8::Boolean::New(true));
+        return scope.Close(v8::Undefined());
     }
 };
 
@@ -289,7 +289,7 @@ public:
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
         input->in->openPort(portNumber);
-        return scope.Close(v8::Boolean::New(true));
+        return scope.Close(v8::Undefined());
     }
     
     static v8::Handle<v8::Value> OpenVirtualPort(const v8::Arguments& args)
@@ -304,7 +304,7 @@ public:
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
         input->in->openVirtualPort(name);
-        return scope.Close(v8::Boolean::New(true));
+        return scope.Close(v8::Undefined());
     }
     
     static v8::Handle<v8::Value> ClosePort(const v8::Arguments& args)
@@ -313,7 +313,7 @@ public:
         NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         input->Unref();
         input->in->closePort();
-        return scope.Close(v8::Boolean::New(true));
+        return scope.Close(v8::Undefined());
     }
 
     static v8::Handle<v8::Value> IgnoreTypes(const v8::Arguments& args)

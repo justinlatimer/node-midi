@@ -167,7 +167,7 @@ public:
         s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
         s_ct->InstanceTemplate()->SetInternalFieldCount(1);
         
-        emit_symbol = NODE_PSYMBOL("emit");
+        emit_symbol = v8::Persistent<v8::String>::New(v8::String::NewSymbol("emit"));
         
         s_ct->SetClassName(v8::String::NewSymbol("NodeMidiInput"));
         

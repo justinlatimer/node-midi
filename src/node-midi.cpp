@@ -324,10 +324,10 @@ public:
             return ThrowException(v8::Exception::TypeError(
                 v8::String::New("Arguments must be boolean")));
         }
-        int filter_sysex = args[0]->BooleanValue();
-        int filter_timing = args[1]->BooleanValue();
-        int filter_sensing = args[2]->BooleanValue();
-        input->in->ignoreTypes(filter_sysex,filter_timing,filter_sensing);
+        bool filter_sysex = args[0]->BooleanValue();
+        bool filter_timing = args[1]->BooleanValue();
+        bool filter_sensing = args[2]->BooleanValue();
+        input->in->ignoreTypes(filter_sysex, filter_timing, filter_sensing);
         return scope.Close(v8::Undefined());
     }
 };

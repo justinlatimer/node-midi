@@ -1,19 +1,29 @@
 {
   "name": "midi",
-  "version": "v0.3.0",
+  "version": "v0.4.0",
   "scripts": {
     "preinstall": "node-waf configure && node-waf build",
     "preuninstall": "rm -rf build/*"
   },
-  "main": "build/default/midi.node",
+  "main": "midi.js",
   "description": "MIDI hardware IO",
   "author": { 
     "name" : "Justin Latimer",
     "email" : "justin@doublemu.com",
     "url" : "http://www.justinlatimer.com/"
   },
+  "contributors": [
+    {
+       "name": "Luc Deschenaux",
+       "email": "luc.deschenaux@freesurf.ch"
+    }
+  ],
+  "engines": {
+      "node": ">=0.5.2"
+  },
   "repository" : { 
     "type" : "git",
     "url" : "https://github.com/justinlatimer/node-midi.git"
   }
 }
+

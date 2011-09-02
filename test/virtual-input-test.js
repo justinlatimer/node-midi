@@ -1,4 +1,4 @@
-var midi = require("../build/default/midi.node");
+var midi = require("../midi.js");
 
 var input = new midi.input();
 input.on('message', function(deltaTime, message) {

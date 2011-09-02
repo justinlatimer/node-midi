@@ -33,8 +33,11 @@ Input:
     // Open the first available input port.
     input.openPort(0);
 
-    // Don't ignore sysex, timing, or active sensing messages.
-    input.ignoreTypes( false, false, false );
+    // Sysex, timing, and active sensing messages are ignored
+    // by default. To enable these message types, pass false for
+    // the appropriate type in the function below.
+    // Order: (Sysex, Timing, Active Sensing)
+    input.ignoreTypes(false, false, false);
     
     // ... receive MIDI messages ...
     
@@ -97,6 +100,11 @@ The same can be done with output ports.
 
   * http://music.mcgill.ca/~gary/rtmidi/
   * http://syskall.com/how-to-write-your-own-native-nodejs-extension
+
+## Contributors
+
+  * Justin Latimer
+  * Luc Deschenaux
 
 ## License
 

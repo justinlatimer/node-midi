@@ -2,11 +2,31 @@
 #include <node.h>
 #include <node_object_wrap.h>
 #include <queue>
+#include <uv.h>
+
+#ifdef _WIN32
+#define __WINDOWS_MM__
+#include "pthread.h"
+#endif
+
+#ifdef __APPLE_
+#define __MACOSX_CORE__
+#endif
+
+#ifdef __gnu_linux__
+#define __LINUX_ALSASEQ__
+#endif
 
 #include "lib/RtMidi/RtMidi.h"
 #include "lib/RtMidi/RtMidi.cpp"
 
+#ifdef BUILD_EXTERNAL_MODULE
 using namespace node;
+
+#else
+namespace node {
+
+#endif
 
 #define SAFE_NODE_SET_PROTOTYPE_METHOD(templ, name, callback)             \
 do {                                                                      \
@@ -147,7 +167,7 @@ private:
     RtMidiIn* in;
 
 public:
-    ev_async* message_async;
+    uv_async_t message_async;
     pthread_mutex_t message_mutex;
     
     struct MidiMessage
@@ -188,20 +208,21 @@ public:
     {
         in = new RtMidiIn();
         pthread_mutex_init(&message_mutex, NULL);
-        message_async = new ev_async();
     }
     
     ~NodeMidiInput()
     {
         in->closePort();
-        ev_async_stop(EV_DEFAULT_UC_ message_async);
-        delete message_async;
+// not sure im doing the right thing here for uv the two next lines
+//      ev_async_stop(EV_DEFAULT_UC_ message_async);
+        delete &message_async;
         delete in;
         pthread_mutex_destroy(&message_mutex);
     }
     
-    static void EmitMessage(EV_P_ ev_async *w, int revents)
+    static void EmitMessage(uv_async_t *w, int status)
     {
+        assert(status == 0);
         v8::HandleScope scope;
         NodeMidiInput *input = static_cast<NodeMidiInput*>(w->data);
         pthread_mutex_lock(&input->message_mutex);
@@ -241,17 +262,16 @@ public:
         pthread_mutex_lock(&input->message_mutex);
         input->message_queue.push(data);
         pthread_mutex_unlock(&input->message_mutex);
-        ev_async_send(EV_DEFAULT_UC_ input->message_async);
+        uv_async_send(&input->message_async);
     }
     
     static v8::Handle<v8::Value> New(const v8::Arguments& args)
     {
         v8::HandleScope scope;
         NodeMidiInput* input = new NodeMidiInput();
-        input->message_async->data = input;
-        ev_async_init(input->message_async, NodeMidiInput::EmitMessage);
-        ev_async_start(EV_DEFAULT_UC_ input->message_async);
-        ev_unref(EV_DEFAULT_UC);
+        input->message_async.data = input;
+        uv_async_init(uv_default_loop(),&input->message_async, NodeMidiInput::EmitMessage);
+        uv_unref(uv_default_loop());
         input->Wrap(args.This());
         return args.This();
     }
@@ -335,12 +355,24 @@ public:
 v8::Persistent<v8::FunctionTemplate> NodeMidiOutput::s_ct;
 v8::Persistent<v8::FunctionTemplate> NodeMidiInput::s_ct;
 
+#ifdef BUILD_EXTERNAL_MODULE
 extern "C" {
     void init (v8::Handle<v8::Object> target)
     {
         NodeMidiOutput::Init(target);
         NodeMidiInput::Init(target);
     }
-    
     NODE_MODULE(nodemidi, init);
 }
+
+#else
+    void InitMidi (v8::Handle<v8::Object> target)
+    {
+        NodeMidiOutput::Init(target);
+        NodeMidiInput::Init(target);
+    }
+} // namespace node
+
+NODE_MODULE(node_midi, node::InitMidi);
+
+#endif

@@ -9,7 +9,7 @@
 #include "pthread.h"
 #endif
 
-#ifdef __APPLE_
+#ifdef __APPLE__
 #define __MACOSX_CORE__
 #endif
 

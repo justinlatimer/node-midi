@@ -10,4 +10,14 @@ try {
     }
 }
 midi.input.prototype.__proto__ = EventEmitter.prototype;
+
+midi.getPortByName=function(iface,name) {
+	var count=iface.getPortCount();
+	for (var i=0; i<count; ++i) {
+		if (iface.getPortName(i)==name)
+			return i;
+	}
+	return -1;
+}
+
 module.exports = midi;

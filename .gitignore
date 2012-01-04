@@ -1,2 +1,3 @@
 .lock-wscript
 /build/
+gmon.out

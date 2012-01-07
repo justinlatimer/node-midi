@@ -61,7 +61,7 @@ void RtMidi :: error( RtError::Type type )
   }
   else {
     std::cerr << '\n' << errorString_ << "\n\n";
-    throw RtError( errorString_, type );
+    //throw RtError( errorString_, type );
   }
 }
 
@@ -245,7 +245,7 @@ void midiInputCallback( const MIDIPacketList *list, void *procRef, void *srcRef 
 
       if ( !continueSysex ) {
         // If not a continuing sysex message, invoke the user callback function or queue the message.
-        if ( data->usingCallback && message.bytes.size() > 0 ) {
+        if ( data->usingCallback) {
           RtMidiIn::RtMidiCallback callback = (RtMidiIn::RtMidiCallback) data->userCallback;
           callback( message.timeStamp, &message.bytes, data->userData );
         }
@@ -757,6 +757,12 @@ void sysexCompletionProc( MIDISysexSendRequest * sreq )
 
 void RtMidiOut :: sendMessage( std::vector<unsigned char> *message )
 {
+  if (!connected_) {
+    errorString_ = "RtMidiOut::sendMessage: not connected !";
+    error( RtError::WARNING );
+    return;
+  }
+
   // We use the MIDISendSysex() function to asynchronously send sysex
   // messages.  Otherwise, we use a single CoreMidi MIDIPacket.
   unsigned int nBytes = message->size();
@@ -1027,9 +1033,9 @@ extern "C" void *alsaMidiHandler( void *ptr )
     }
 
     snd_seq_free_event( ev );
-    if ( message.bytes.size() == 0 ) continue;
+    if ( message.bytes.size() == 0 || continueSysex ) continue;
 
-    if ( data->usingCallback && !continueSysex ) {
+    if ( data->usingCallback ) {
       RtMidiIn::RtMidiCallback callback = (RtMidiIn::RtMidiCallback) data->userCallback;
       callback( message.timeStamp, &message.bytes, data->userData );
     }
@@ -1506,6 +1512,11 @@ RtMidiOut :: ~RtMidiOut()
 
 void RtMidiOut :: sendMessage( std::vector<unsigned char> *message )
 {
+  if (!connected_) {
+    errorString_ = "RtMidiOut::sendMessage: not connected !";
+    error( RtError::WARNING );
+    return;
+  }
   int result;
   AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
   unsigned int nBytes = message->size();
@@ -1638,25 +1649,25 @@ extern "C" void *irixMidiHandler( void *ptr )
           for ( int i=0; i<event.msglen; ++i )
             message.bytes.push_back( event.sysexmsg[i] );
           if ( event.sysexmsg[event.msglen-1] == 0xF7 ) continueSysex = false;
-          if ( !continueSysex ) {
-            // If not a continuing sysex message, invoke the user callback function or queue the message.
-            if ( data->usingCallback && message.bytes.size() > 0 ) {
-              RtMidiIn::RtMidiCallback callback = (RtMidiIn::RtMidiCallback) data->userCallback;
-              callback( message.timeStamp, &message.bytes, data->userData );
-            }
-            else {
-              // As long as we haven't reached our queue size limit, push the message.
-              if ( data->queue.size < data->queue.ringSize ) {
-                data->queue.ring[data->queue.back++] = message;
-                if ( data->queue.back == data->queue.ringSize )
-                  data->queue.back = 0;
-                data->queue.size++;
-              }
-              else
-                std::cerr << "\nRtMidiIn: message queue limit reached!!\n\n";
-            }
-            message.bytes.clear();
+	}
+        if ( !continueSysex ) {
+          // If not a continuing sysex message, invoke the user callback function or queue the message.
+          if ( data->usingCallback ) {
+            RtMidiIn::RtMidiCallback callback = (RtMidiIn::RtMidiCallback) data->userCallback;
+            callback( message.timeStamp, &message.bytes, data->userData );
           }
+          else {
+            // As long as we haven't reached our queue size limit, push the message.
+            if ( data->queue.size < data->queue.ringSize ) {
+              data->queue.ring[data->queue.back++] = message;
+              if ( data->queue.back == data->queue.ringSize )
+                data->queue.back = 0;
+              data->queue.size++;
+            }
+            else
+              std::cerr << "\nRtMidiIn: message queue limit reached!!\n\n";
+          }
+          message.bytes.clear();
         }
       }
       mdFree( NULL );
@@ -1932,6 +1943,11 @@ RtMidiOut :: ~RtMidiOut()
 
 void RtMidiOut :: sendMessage( std::vector<unsigned char> *message )
 {
+  if (!connected_) {
+    errorString_ = "RtMidiOut::sendMessage: not connected !";
+    error( RtError::WARNING );
+    return;
+  }
   int result;
   MDevent event;
   IrixMidiData *data = static_cast<IrixMidiData *> (apiData_);
@@ -2371,6 +2387,11 @@ RtMidiOut :: ~RtMidiOut()
 
 void RtMidiOut :: sendMessage( std::vector<unsigned char> *message )
 {
+  if (!connected_) {
+    errorString_ = "RtMidiOut::sendMessage: not connected !";
+    error( RtError::WARNING );
+    return;
+  }
   unsigned int nBytes = static_cast<unsigned int>(message->size());
   if ( nBytes == 0 ) {
     errorString_ = "RtMidiOut::sendMessage: message argument is empty!";
@@ -2511,20 +2532,22 @@ int jackProcessIn( jack_nframes_t nframes, void *arg )
 
     jData->lastTime = time;
 
-    if ( rtData->usingCallback && !rtData->continueSysex ) {
-      RtMidiIn::RtMidiCallback callback = (RtMidiIn::RtMidiCallback) rtData->userCallback;
-      callback( message.timeStamp, &message.bytes, rtData->userData );
-    }
-    else {
-      // As long as we haven't reached our queue size limit, push the message.
-      if ( rtData->queue.size < rtData->queue.ringSize ) {
-        rtData->queue.ring[rtData->queue.back++] = message;
-        if ( rtData->queue.back == rtData->queue.ringSize )
-          rtData->queue.back = 0;
-        rtData->queue.size++;
+    if ( !rtData->continueSysex ) {
+      if ( rtData->usingCallback ) {
+        RtMidiIn::RtMidiCallback callback = (RtMidiIn::RtMidiCallback) rtData->userCallback;
+        callback( message.timeStamp, &message.bytes, rtData->userData );
       }
-      else
-        std::cerr << "\nRtMidiIn: message queue limit reached!!\n\n";
+      else {
+        // As long as we haven't reached our queue size limit, push the message.
+        if ( rtData->queue.size < rtData->queue.ringSize ) {
+          rtData->queue.ring[rtData->queue.back++] = message;
+          if ( rtData->queue.back == rtData->queue.ringSize )
+            rtData->queue.back = 0;
+          rtData->queue.size++;
+        }
+        else
+          std::cerr << "\nRtMidiIn: message queue limit reached!!\n\n";
+      }
     }
   }
 
@@ -2802,6 +2825,11 @@ void RtMidiOut :: closePort()
 
 void RtMidiOut :: sendMessage( std::vector<unsigned char> *message )
 {
+  if (!connected_) {
+    errorString_ = "RtMidiOut::sendMessage: not connected !";
+    error( RtError::WARNING );
+    return;
+  }
   int nBytes = message->size();
   JackMidiData *data = static_cast<JackMidiData *> (apiData_);
 

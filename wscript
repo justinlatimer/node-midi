@@ -13,10 +13,6 @@ def configure(conf):
 
 def build(bld):
   obj = bld.new_task_gen("cxx", "shlib", "node_addon")
-  obj.cxxflags = ["-g", "-D_FILE_OFFSET_BITS=64", "-D_LARGEFILE_SOURCE", "-Wall"]
-  if sys.platform == 'darwin':
-    obj.cxxflags.append("-D__MACOSX_CORE__")
-  else:
-    obj.cxxflags.append("-D__LINUX_ALSASEQ__")
+  obj.cxxflags = ["-g", "-D_FILE_OFFSET_BITS=64", "-D_LARGEFILE_SOURCE", "-Wall", "-DBUILD_EXTERNAL_MODULE"]
   obj.target = "midi_addon"
   obj.source = "src/node-midi.cpp"

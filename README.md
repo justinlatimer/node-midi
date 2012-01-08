@@ -8,7 +8,15 @@ RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), Windows
 
 ## Installation
 
-	$ node-waf configure && node-waf build
+From npm:
+
+    $ npm install midi
+    
+From source:
+    
+    $ git clone https://github.com/justinlatimer/node-midi.git
+    $ cd node-midi/
+    $ npm install
 
 ## Usage
 

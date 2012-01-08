@@ -1,11 +1,4 @@
-// Node version 0.4.0 and 0.6.0 compatibility
-try {
-  var midi = require('./build/Release/midi');
-} catch(e) { try {
-  var midi = require('./build/default/midi');
-} catch(e) {
-  throw e;
-}}
+var midi = require('./build/Release/midi');
 
 // MIDI input inherits from EventEmitter
 var EventEmitter = require('events').EventEmitter;

@@ -1,8 +1,8 @@
 // Node version 0.4.0 and 0.6.0 compatibility
 try {
-  var midi = require('./build/Release/midi_addon');
+  var midi = require('./build/Release/midi');
 } catch(e) { try {
-  var midi = require('./build/default/midi_addon');
+  var midi = require('./build/default/midi');
 } catch(e) {
   throw e;
 }}

@@ -6,6 +6,9 @@
     "preuninstall": "rm -rf build/*"
   },
   "main": "midi.js",
+  "scripts": {
+    "test": "node test/virtual-loopback-test-automated.js"
+  },
   "description": "MIDI hardware IO",
   "author": { 
     "name" : "Justin Latimer",

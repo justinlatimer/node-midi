@@ -134,7 +134,8 @@ public:
     }
 };
 
-static v8::Persistent<v8::String> emit_symbol;
+const char* symbol_emit = "emit";
+const char* symbol_message = "message";
 
 class NodeMidiInput : public ObjectWrap
 {
@@ -161,8 +162,6 @@ public:
         
         s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
         s_ct->InstanceTemplate()->SetInternalFieldCount(1);
-        
-        emit_symbol = NODE_PSYMBOL("emit");
         
         s_ct->SetClassName(v8::String::NewSymbol("NodeMidiInput"));
         
@@ -203,7 +202,7 @@ public:
         {
             MidiMessage* message = input->message_queue.front();
             v8::Local<v8::Value> args[3];
-            args[0]= v8::String::New("message");
+            args[0] = v8::String::New(symbol_message);
             args[1] = v8::Local<v8::Value>::New(v8::Number::New(message->deltaTime));
             size_t count = message->message.size();
             v8::Local<v8::Array> data = v8::Array::New(count);
@@ -211,16 +210,7 @@ public:
                 data->Set(v8::Number::New(i), v8::Integer::New(message->message[i])); 
             }
             args[2] = v8::Local<v8::Value>::New(data);
-            v8::Local<v8::Value> emit_v = input->handle_->Get(emit_symbol);
-            if (emit_v->IsFunction()) {
-                v8::Local<v8::Function> emit=v8::Local<v8::Function>::Cast(emit_v);
-                v8::TryCatch tc;
-                emit->Call(input->handle_,3,args);
-                if (tc.HasCaught()){
-                    std::cerr << '\n' << "node_midi: unexpected error" << "\n\n";
-                    node::FatalException(tc);
-                }
-            }
+            MakeCallback(input->handle_, symbol_emit, 3, args);
             input->message_queue.pop();
             delete message;
         }

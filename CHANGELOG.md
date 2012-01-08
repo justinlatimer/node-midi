@@ -1,5 +1,14 @@
 # node-midi Changelog
 
+## Version 0.5.0
+
+* Switch from using libev to libuv. (Luc Deschenaux)
+* Check a port number is valid before trying to open it. (Luc Deschenaux)
+* Remove support for node versions < 0.6.0.
+* Code and build system improvements with new supported node versions.
+* Update documentation.
+
+
 ## Version 0.4.0
 
 * Upgrade RtMidi to 1.0.15. (Luc Deschenaux)

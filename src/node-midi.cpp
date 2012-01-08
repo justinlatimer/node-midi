@@ -4,29 +4,10 @@
 #include <queue>
 #include <uv.h>
 
-#ifdef _WIN32
-#define __WINDOWS_MM__
-#include "pthread.h"
-#endif
-
-#ifdef __APPLE__
-#define __MACOSX_CORE__
-#endif
-
-#ifdef __gnu_linux__
-#define __LINUX_ALSASEQ__
-#endif
-
 #include "lib/RtMidi/RtMidi.h"
 #include "lib/RtMidi/RtMidi.cpp"
 
-#ifdef BUILD_EXTERNAL_MODULE
 using namespace node;
-
-#else
-namespace node {
-
-#endif
 
 #define SAFE_NODE_SET_PROTOTYPE_METHOD(templ, name, callback)             \
 do {                                                                      \
@@ -355,7 +336,6 @@ public:
 v8::Persistent<v8::FunctionTemplate> NodeMidiOutput::s_ct;
 v8::Persistent<v8::FunctionTemplate> NodeMidiInput::s_ct;
 
-#ifdef BUILD_EXTERNAL_MODULE
 extern "C" {
     void init (v8::Handle<v8::Object> target)
     {
@@ -364,15 +344,3 @@ extern "C" {
     }
     NODE_MODULE(nodemidi, init);
 }
-
-#else
-    void InitMidi (v8::Handle<v8::Object> target)
-    {
-        NodeMidiOutput::Init(target);
-        NodeMidiInput::Init(target);
-    }
-} // namespace node
-
-NODE_MODULE(node_midi, node::InitMidi);
-
-#endif

@@ -241,7 +241,7 @@ public:
         v8::HandleScope scope;
         NodeMidiInput* input = new NodeMidiInput();
         input->message_async.data = input;
-        uv_async_init(uv_default_loop(),&input->message_async, NodeMidiInput::EmitMessage);
+        uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         uv_unref(uv_default_loop());
         input->Wrap(args.This());
         return args.This();

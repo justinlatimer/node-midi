@@ -86,6 +86,10 @@ public:
                 v8::String::New("First argument must be an integer")));
         }
         unsigned int portNumber = args[0]->Uint32Value();
+        if (portNumber >= output->out->getPortCount()) {
+            return ThrowException(v8::Exception::RangeError(
+                v8::String::New("Invalid MIDI port number")));
+        }
         output->out->openPort(portNumber);
         return scope.Close(v8::Undefined());
     }
@@ -158,7 +162,7 @@ public:
         s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
         s_ct->InstanceTemplate()->SetInternalFieldCount(1);
         
-        emit_symbol = v8::Persistent<v8::String>::New(v8::String::NewSymbol("emit"));
+        emit_symbol = NODE_PSYMBOL("emit");
         
         s_ct->SetClassName(v8::String::NewSymbol("NodeMidiInput"));
         
@@ -184,8 +188,6 @@ public:
     ~NodeMidiInput()
     {
         in->closePort();
-// not sure im doing the right thing here for uv the two next lines
-//      ev_async_stop(EV_DEFAULT_UC_ message_async);
         delete &message_async;
         delete in;
         pthread_mutex_destroy(&message_mutex);
@@ -215,8 +217,9 @@ public:
                 v8::TryCatch tc;
                 emit->Call(input->handle_,3,args);
                 if (tc.HasCaught()){
+                    std::cerr << '\n' << "node_midi: unexpected error" << "\n\n";
                     node::FatalException(tc);
-               }
+                }
             }
             input->message_queue.pop();
             delete message;
@@ -277,6 +280,10 @@ public:
                 v8::String::New("First argument must be an integer")));
         }
         unsigned int portNumber = args[0]->Uint32Value();
+        if (portNumber >= input->in->getPortCount()) {
+            return ThrowException(v8::Exception::RangeError(
+                v8::String::New("Invalid MIDI port number")));
+        }
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
         input->in->openPort(portNumber);
@@ -332,5 +339,5 @@ extern "C" {
         NodeMidiOutput::Init(target);
         NodeMidiInput::Init(target);
     }
-    NODE_MODULE(nodemidi, init);
+    NODE_MODULE(nodemidi, init)
 }

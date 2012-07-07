@@ -144,7 +144,7 @@ private:
 
 public:
     uv_async_t message_async;
-    pthread_mutex_t message_mutex;
+    uv_mutex_t message_mutex;
     
     struct MidiMessage
     {
@@ -181,7 +181,7 @@ public:
     NodeMidiInput()
     {
         in = new RtMidiIn();
-        pthread_mutex_init(&message_mutex, NULL);
+        uv_mutex_init(&message_mutex);
     }
     
     ~NodeMidiInput()
@@ -189,7 +189,7 @@ public:
         in->closePort();
         delete &message_async;
         delete in;
-        pthread_mutex_destroy(&message_mutex);
+        uv_mutex_destroy(&message_mutex);
     }
     
     static void EmitMessage(uv_async_t *w, int status)
@@ -197,7 +197,7 @@ public:
         assert(status == 0);
         v8::HandleScope scope;
         NodeMidiInput *input = static_cast<NodeMidiInput*>(w->data);
-        pthread_mutex_lock(&input->message_mutex);
+        uv_mutex_lock(&input->message_mutex);
         while (!input->message_queue.empty())
         {
             MidiMessage* message = input->message_queue.front();
@@ -214,7 +214,7 @@ public:
             input->message_queue.pop();
             delete message;
         }
-        pthread_mutex_unlock(&input->message_mutex);
+        uv_mutex_unlock(&input->message_mutex);
     }
     
     static void Callback(double deltaTime, std::vector<unsigned char> *message, void *userData)
@@ -223,9 +223,9 @@ public:
         MidiMessage* data = new MidiMessage();
         data->deltaTime = deltaTime;
         data->message = *message;
-        pthread_mutex_lock(&input->message_mutex);
+        uv_mutex_lock(&input->message_mutex);
         input->message_queue.push(data);
-        pthread_mutex_unlock(&input->message_mutex);
+        uv_mutex_unlock(&input->message_mutex);
         uv_async_send(&input->message_async);
     }
     
@@ -235,7 +235,7 @@ public:
         NodeMidiInput* input = new NodeMidiInput();
         input->message_async.data = input;
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
-        uv_unref(uv_default_loop());
+        uv_unref((uv_handle_t*)uv_default_loop());
         input->Wrap(args.This());
         return args.This();
     }
@@ -329,5 +329,5 @@ extern "C" {
         NodeMidiOutput::Init(target);
         NodeMidiInput::Init(target);
     }
-    NODE_MODULE(nodemidi, init)
+    NODE_MODULE(midi, init)
 }

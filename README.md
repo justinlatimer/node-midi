@@ -3,10 +3,14 @@
 # node-midi
 
 A node.js wrapper for the RtMidi C++ library that provides realtime MIDI I/O.
-RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), Windows
-(Multimedia), although node-midi has only been tested briefly on Mac OS X.
+RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), and Windows
+(Multimedia).
 
 ## Installation
+
+Installation uses node-gyp and requires Python 2.7.2 or higher.  On
+Windows you must also have Microsoft Visual C++ installed (the Express
+edition works fine).
 
 From npm:
 

@@ -13,12 +13,12 @@
   },
   "contributors": [
     {
-       "name": "Luc Deschenaux",
-       "email": "luc.deschenaux@freesurf.ch"
+     "name": "Luc Deschenaux",
+     "email": "luc.deschenaux@freesurf.ch"
     }
   ],
   "engines": {
-      "node": ">=0.8.0"
+    "node": ">=0.8.0"
   },
   "repository" : { 
     "type" : "git",

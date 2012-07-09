@@ -187,7 +187,6 @@ public:
     ~NodeMidiInput()
     {
         in->closePort();
-        delete &message_async;
         delete in;
         uv_mutex_destroy(&message_mutex);
     }

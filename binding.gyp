@@ -32,6 +32,13 @@
             ],
             'xcode_settings': {
               'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
+            },
+            'link_settings': {
+              'libraries': [
+                'CoreMIDI.framework',
+                'CoreAudio.framework',
+                'CoreFoundation.framework',
+              ],
             }
           }
         ],

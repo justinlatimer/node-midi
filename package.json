@@ -20,6 +20,9 @@
   "engines": {
     "node": ">=0.8.0"
   },
+  "dependencies": {
+    "bindings": "*"
+  },
   "repository" : { 
     "type" : "git",
     "url" : "https://github.com/justinlatimer/node-midi.git"

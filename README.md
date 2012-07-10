@@ -117,6 +117,7 @@ The same can be done with output ports.
 
   * Justin Latimer
   * Luc Deschenaux
+  * Michael Alyn Miller
 
 ## License
 

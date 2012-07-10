@@ -1,4 +1,4 @@
-var midi = require('./build/Release/midi');
+var midi = require('bindings')('midi');
 
 // MIDI input inherits from EventEmitter
 var EventEmitter = require('events').EventEmitter;

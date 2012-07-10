@@ -2,24 +2,29 @@
   "name": "midi",
   "version": "v0.5.0",
   "scripts": {
-    "preinstall": "make",
     "test": "node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
   "description": "MIDI hardware IO",
   "author": { 
     "name" : "Justin Latimer",
-    "email" : "justin@doublemu.com",
+    "email" : "justinlatimer@gmail.com",
     "url" : "http://www.justinlatimer.com/"
   },
   "contributors": [
     {
-       "name": "Luc Deschenaux",
-       "email": "luc.deschenaux@freesurf.ch"
+     "name": "Luc Deschenaux",
+     "email": "luc.deschenaux@freesurf.ch"
+    }, {
+      "name": "Michael Alyn Miller",
+      "email": "malyn@strangegizmo.com"
     }
   ],
   "engines": {
-      "node": ">=0.6.0"
+    "node": ">=0.8.0"
+  },
+  "dependencies": {
+    "bindings": "*"
   },
   "repository" : { 
     "type" : "git",

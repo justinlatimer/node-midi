@@ -138,7 +138,7 @@ writable stream
 
     var stream2 = midi.createWriteStream(output);
 
-    require('fs').createReadStream('something.mid').pipe(steam2);
+    require('fs').createReadStream('something.mid').pipe(stream2);
 
 
 ## References

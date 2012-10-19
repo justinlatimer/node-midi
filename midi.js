@@ -19,23 +19,51 @@ midi.createReadStream = function(input) {
     var packet = new Buffer(message);
 
     if (!stream.paused) {
-      var res = stream.emit('data', packet);
+      stream.emit('data', packet);
     } else {
       stream.queue.push(packet);
     }
-
-    if (!res) {
-      stream.paused = true;
-      stream.once('drain', function() {
-        while (stream.queue.length && stream.write(queue.shift())) {}
-      });
-    }
   });
+
+  stream.pause = function() {
+    stream.paused = true;
+  };
+
+  stream.resume = function() {
+    stream.paused = false;
+    while (stream.queue.length && stream.write(queue.shift())) {}
+  };
 
   return stream;
 };
 
 
-midi.createWriteStream = function() {
+midi.createWriteStream = function(output) {
+  output = output || new midi.output();
+  var stream = new Stream();
+  stream.writable = true;
+  stream.paused = false;
+  stream.queue = [];
 
+  stream.write = function(d) {
+
+    if (Buffer.isBuffer(d)) {
+      d = [d[0], d[1], d[2]];
+    }
+
+    output.sendMessage(d);
+
+    return !this.paused;
+  }
+
+  stream.end = function(buf) {
+    buf && stream.write(buf);
+    stream.writable = false;
+  };
+
+  stream.destroy = function() {
+    stream.writable = false;
+  }
+
+  return stream;
 };

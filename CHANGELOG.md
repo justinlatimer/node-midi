@@ -1,5 +1,9 @@
 # node-midi Changelog
 
+## Version 0.7.0
+
+* Add readable/writable stream support. ()
+
 ## Version 0.6.0
 
 * Upgrade build system to node-gyp bringing Windows support. (Michael Alyn Miller)

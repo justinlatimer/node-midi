@@ -2,6 +2,7 @@
   "name": "midi",
   "version": "v0.7.0",
   "scripts": {
+    "preinstall": "sh install_linux_deps.sh && node-gyp rebuild",
     "test": "node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
@@ -34,4 +35,3 @@
     "url" : "https://github.com/justinlatimer/node-midi.git"
   }
 }
-

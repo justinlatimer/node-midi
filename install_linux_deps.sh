@@ -1,6 +1,8 @@
 #!/bin/sh
 # -*- coding: utf-8, tab-width: 2 -*-
 
+LANG=C uname -o 2>&1 | grep -qxFe 'GNU/Linux' || exit 0
+
 PKG_NEED='libasound2-dev'
 # are there any pkgs not yet installed? if not, instantly succeed:
 LANG=C dpkg-query --show $PKG_NEED 2>&1 | grep -qPe '\t$' || exit 0

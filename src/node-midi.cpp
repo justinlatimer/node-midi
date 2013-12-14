@@ -234,7 +234,6 @@ public:
         NodeMidiInput* input = new NodeMidiInput();
         input->message_async.data = input;
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
-        uv_unref((uv_handle_t*)uv_default_loop());
         input->Wrap(args.This());
         return args.This();
     }
@@ -300,6 +299,7 @@ public:
         NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         input->Unref();
         input->in->closePort();
+        uv_close((uv_handle_t*)&input->message_async, NULL);
         return scope.Close(v8::Undefined());
     }
 

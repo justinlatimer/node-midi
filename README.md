@@ -163,11 +163,16 @@ writable stream
   * http://music.mcgill.ca/~gary/rtmidi/
   * http://syskall.com/how-to-write-your-own-native-nodejs-extension
 
-## Contributors
+## Maintainers
 
-  * Justin Latimer
-  * Luc Deschenaux
-  * Michael Alyn Miller
+  * Justin Latimer - [@justinlatimer](https://github.com/justinlatimer)
+  * Elijah Insua - [@tmpvar](https://github.com/tmpvar)
+  * Andrew Morton - [@drewish](https://github.com/drewish)
+
+## Contributors
+  
+  * Luc Deschenaux - [@luxigo](https://github.com/luxigo)
+  * Michael Alyn Miller - [@malyn](https://github.com/malyn)
 
 ## License
 

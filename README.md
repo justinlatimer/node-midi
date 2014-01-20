@@ -6,11 +6,28 @@ A node.js wrapper for the RtMidi C++ library that provides realtime MIDI I/O.
 RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), and Windows
 (Multimedia).
 
+## Prerequisites
+
+### OSX
+
+* Some version of Xcode (or Command Line Tools)
+* Python (for node-gyp) 
+
+### Windows
+
+* Microsoft Visual C++(the Express edition works fine)
+* Python (for node-gyp)
+
+### Linux
+
+* A C++ compiler
+* You must have installed and configured ALSA. Without it this module will **NOT** build.
+	* Install the libasound2-dev package.
+* Python (for node-gyp)
+
 ## Installation
 
-Installation uses node-gyp and requires Python 2.7.2 or higher.  On
-Windows you must also have Microsoft Visual C++ installed (the Express
-edition works fine).
+Installation uses node-gyp and requires Python 2.7.2 or higher.
 
 From npm:
 

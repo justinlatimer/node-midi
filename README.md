@@ -140,7 +140,7 @@ You can also use this library with streams! Here are the interfaces
 
     var stream2 = midi.createReadStream(input)
 
-    stream2.pipe(require('fs').createWriteStream('something.mid'));
+    stream2.pipe(require('fs').createWriteStream('something.bin'));
 
 
 #### Writable Stream
@@ -155,7 +155,7 @@ You can also use this library with streams! Here are the interfaces
 
     var stream2 = midi.createWriteStream(output);
 
-    require('fs').createReadStream('something.mid').pipe(stream2);
+    require('fs').createReadStream('something.bin').pipe(stream2);
 
 
 ## References

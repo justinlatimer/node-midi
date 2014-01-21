@@ -15,7 +15,7 @@
               '-fno-exceptions'
             ],
             'defines': [
-              '__LINUX_ALSASEQ__'
+              '__LINUX_ALSA__'
             ],
             'link_settings': {
               'libraries': [

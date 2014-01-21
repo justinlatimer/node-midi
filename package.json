@@ -1,26 +1,29 @@
 {
   "name": "midi",
-  "version": "v0.7.0",
+  "version": "v0.7.1",
   "scripts": {
     "test": "node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
   "description": "MIDI hardware IO",
-  "author": { 
+  "author": {
     "name" : "Justin Latimer",
     "email" : "justinlatimer@gmail.com",
     "url" : "http://www.justinlatimer.com/"
   },
   "contributors": [
     {
-     "name": "Luc Deschenaux",
-     "email": "luc.deschenaux@freesurf.ch"
+      "name": "Elijah Insua",
+      "email": "tmpvar@gmail.com"
+    }, {
+      "name": "Andrew Morton",
+      "email": "drewish@katherinehouse.com"
+    }, {
+      "name": "Luc Deschenaux",
+      "email": "luc.deschenaux@freesurf.ch"
     }, {
       "name": "Michael Alyn Miller",
       "email": "malyn@strangegizmo.com"
-    }, {
-      "name": "Elijah Insua",
-      "email": "tmpvar@gmail.com"
     }
   ],
   "engines": {
@@ -29,7 +32,7 @@
   "dependencies": {
     "bindings": "*"
   },
-  "repository" : { 
+  "repository" : {
     "type" : "git",
     "url" : "https://github.com/justinlatimer/node-midi.git"
   }

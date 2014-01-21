@@ -1,8 +1,12 @@
 # node-midi Changelog
 
+## Version 0.7.1
+
+* Remove unmatched uv_unref() causing segfault. (Andrew Morton)
+
 ## Version 0.7.0
 
-* Add readable/writable stream support. ()
+* Add readable/writable stream support. (Elijah Insua)
 
 ## Version 0.6.0
 

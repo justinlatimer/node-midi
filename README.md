@@ -173,6 +173,7 @@ You can also use this library with streams! Here are the interfaces
   
   * Luc Deschenaux - [@luxigo](https://github.com/luxigo)
   * Michael Alyn Miller - [@malyn](https://github.com/malyn)
+  * Hugo Hromic - [@hhromic](https://github.com/hhromic)
 
 ## License
 

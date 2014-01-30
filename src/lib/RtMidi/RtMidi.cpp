@@ -556,6 +556,7 @@ void MidiInCore :: openPort( unsigned int portNumber, const std::string portName
     return;
   }
 
+  CFRunLoopRunInMode( kCFRunLoopDefaultMode, 0, false );
   unsigned int nSrc = MIDIGetNumberOfSources();
   if (nSrc < 1) {
     errorString_ = "MidiInCore::openPort: no MIDI input sources found!";
@@ -633,6 +634,7 @@ void MidiInCore :: closePort( void )
 
 unsigned int MidiInCore :: getPortCount()
 {
+  CFRunLoopRunInMode( kCFRunLoopDefaultMode, 0, false );
   return MIDIGetNumberOfSources();
 }
 
@@ -651,7 +653,7 @@ CFStringRef EndpointName( MIDIEndpointRef endpoint, bool isExternal )
     CFRelease( str );
   }
 
-  MIDIEntityRef entity = NULL;
+  MIDIEntityRef entity = 0;
   MIDIEndpointGetEntity( endpoint, &entity );
   if ( entity == 0 )
     // probably virtual
@@ -768,6 +770,7 @@ std::string MidiInCore :: getPortName( unsigned int portNumber )
   char name[128];
 
   std::string stringName;
+  CFRunLoopRunInMode( kCFRunLoopDefaultMode, 0, false );
   if ( portNumber >= MIDIGetNumberOfSources() ) {
     ost << "MidiInCore::getPortName: the 'portNumber' argument (" << portNumber << ") is invalid.";
     errorString_ = ost.str();
@@ -825,6 +828,7 @@ void MidiOutCore :: initialize( const std::string& clientName )
 
 unsigned int MidiOutCore :: getPortCount()
 {
+  CFRunLoopRunInMode( kCFRunLoopDefaultMode, 0, false );
   return MIDIGetNumberOfDestinations();
 }
 
@@ -836,6 +840,7 @@ std::string MidiOutCore :: getPortName( unsigned int portNumber )
   char name[128];
 
   std::string stringName;
+  CFRunLoopRunInMode( kCFRunLoopDefaultMode, 0, false );
   if ( portNumber >= MIDIGetNumberOfDestinations() ) {
     ost << "MidiOutCore::getPortName: the 'portNumber' argument (" << portNumber << ") is invalid.";
     errorString_ = ost.str();
@@ -860,6 +865,7 @@ void MidiOutCore :: openPort( unsigned int portNumber, const std::string portNam
     return;
   }
 
+  CFRunLoopRunInMode( kCFRunLoopDefaultMode, 0, false );
   unsigned int nDest = MIDIGetNumberOfDestinations();
   if (nDest < 1) {
     errorString_ = "MidiOutCore::openPort: no MIDI output destinations found!";
@@ -2433,7 +2439,7 @@ public:
       throw std::runtime_error("CKsEnumFilters: no devices found");
 
     // Loop through members of the set and get details for each
-    for (int iClassMember=0;;iClassMember++) {
+    for ( int iClassMember=0; iClassMember++ ) {
       try {
         SP_DEVICE_INTERFACE_DATA DID;
         DID.cbSize = sizeof(DID);
@@ -3503,7 +3509,7 @@ void MidiInJack :: openPort( unsigned int portNumber, const std::string portName
                                      JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0 );
 
   if ( data->port == NULL) {
-    errorString_ = "MidiInJack::openVirtualPort: JACK error creating virtual port";
+    errorString_ = "MidiInJack::openPort: JACK error creating port";
     RtMidi::error( RtError::DRIVER_ERROR, errorString_ );
   }
 
@@ -3658,7 +3664,7 @@ void MidiOutJack :: openPort( unsigned int portNumber, const std::string portNam
       JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0 );
 
   if ( data->port == NULL ) {
-    errorString_ = "MidiOutJack::openVirtualPort: JACK error creating virtual port";
+    errorString_ = "MidiOutJack::openPort: JACK error creating port";
     RtMidi::error( RtError::DRIVER_ERROR, errorString_ );
   }
 

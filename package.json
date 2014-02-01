@@ -32,6 +32,10 @@
   "dependencies": {
     "bindings": "*"
   },
+  "devDependencies": {
+    "mocha": ">= 1.17.x",
+    "should": ">= 3.1.x"
+  },
   "repository" : {
     "type" : "git",
     "url" : "https://github.com/justinlatimer/node-midi.git"

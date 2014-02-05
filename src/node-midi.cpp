@@ -51,11 +51,17 @@ public:
     static v8::Handle<v8::Value> New(const v8::Arguments& args)
     {
         v8::HandleScope scope;
+
+        if (!args.IsConstructCall()) {
+            return ThrowException(v8::Exception::TypeError(
+                v8::String::New("Use the new operator to create instances of this object.")));
+        }
+
         NodeMidiOutput* output = new NodeMidiOutput();
         output->Wrap(args.This());
         return args.This();
     }
-    
+
     static v8::Handle<v8::Value> GetPortCount(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -227,17 +233,23 @@ public:
         uv_mutex_unlock(&input->message_mutex);
         uv_async_send(&input->message_async);
     }
-    
+
     static v8::Handle<v8::Value> New(const v8::Arguments& args)
     {
         v8::HandleScope scope;
+
+        if (!args.IsConstructCall()) {
+            return ThrowException(v8::Exception::TypeError(
+                v8::String::New("Use the new operator to create instances of this object.")));
+        }
+
         NodeMidiInput* input = new NodeMidiInput();
         input->message_async.data = input;
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->Wrap(args.This());
         return args.This();
     }
-    
+
     static v8::Handle<v8::Value> GetPortCount(const v8::Arguments& args)
     {
         v8::HandleScope scope;

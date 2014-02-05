@@ -1,5 +1,9 @@
 # node-midi Changelog
 
+## Version 0.8.1
+
+* Fixing crash when `new` is omitted. (Andrew Morton)
+
 ## Version 0.8.0
 
 * Update RtMidi to latest upstream. (Andrew Morton)

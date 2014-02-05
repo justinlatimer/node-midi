@@ -1,5 +1,11 @@
 # node-midi Changelog
 
+## Version 0.8.0
+
+* Update RtMidi to latest upstream. (Andrew Morton)
+* Added missing MIDI Clock event case. (Hugo Hromic)
+* Upgraded RtMidi library to version 2.0.1. (Hugo Hromic)
+
 ## Version 0.7.1
 
 * Remove unmatched uv_unref() causing segfault. (Andrew Morton)

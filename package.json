@@ -1,6 +1,6 @@
 {
   "name": "midi",
-  "version": "v0.7.1",
+  "version": "v0.8.0",
   "scripts": {
     "test": "node test/virtual-loopback-test-automated.js"
   },
@@ -24,6 +24,8 @@
     }, {
       "name": "Michael Alyn Miller",
       "email": "malyn@strangegizmo.com"
+    }, {
+      "name": "Hugo Hromic"
     }
   ],
   "engines": {

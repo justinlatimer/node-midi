@@ -130,9 +130,9 @@ public:
                 v8::String::New("First argument must be an array")));
         }
         v8::Local<v8::Object> message = args[0]->ToObject();
-        size_t messageLength = message->Get(v8::String::New("length"))->Int32Value();
+        int32_t messageLength = message->Get(v8::String::New("length"))->Int32Value();
         std::vector<unsigned char> messageOutput;
-        for (size_t i = 0; i != messageLength; ++i) {
+        for (int32_t i = 0; i != messageLength; ++i) {
             messageOutput.push_back(message->Get(v8::Integer::New(i))->Int32Value());
         }
         output->out->sendMessage(&messageOutput);
@@ -209,9 +209,9 @@ public:
             v8::Local<v8::Value> args[3];
             args[0] = v8::String::New(symbol_message);
             args[1] = v8::Local<v8::Value>::New(v8::Number::New(message->deltaTime));
-            size_t count = message->message.size();
+            int32_t count = (int32_t)message->message.size();
             v8::Local<v8::Array> data = v8::Array::New(count);
-            for (size_t i = 0; i < count; ++i) { 
+            for (int32_t i = 0; i < count; ++i) { 
                 data->Set(v8::Number::New(i), v8::Integer::New(message->message[i])); 
             }
             args[2] = v8::Local<v8::Value>::New(data);

@@ -44,6 +44,15 @@
         ],
         ['OS=="win"',
           {
+            'configurations': {
+              'Release': {
+                'msvs_settings': {
+                  'VCCLCompilerTool': {
+                    'ExceptionHandling': 1
+                  }
+                }
+              }
+            },
             'defines': [
               '__WINDOWS_MM__'
             ],

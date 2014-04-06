@@ -18,31 +18,31 @@ public:
     static void Init(v8::Handle<v8::Object> target)
     {
         v8::HandleScope scope;
-        
+
         v8::Local<v8::FunctionTemplate> t = v8::FunctionTemplate::New(New);
-        
+
         s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
         s_ct->InstanceTemplate()->SetInternalFieldCount(1);
         s_ct->SetClassName(v8::String::NewSymbol("NodeMidiOutput"));
-        
+
         NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortCount", GetPortCount);
         NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortName", GetPortName);
-        
+
         NODE_SET_PROTOTYPE_METHOD(s_ct, "openPort", OpenPort);
         NODE_SET_PROTOTYPE_METHOD(s_ct, "openVirtualPort", OpenVirtualPort);
         NODE_SET_PROTOTYPE_METHOD(s_ct, "closePort", ClosePort);
-        
+
         NODE_SET_PROTOTYPE_METHOD(s_ct, "sendMessage", SendMessage);
-        
+
         target->Set(v8::String::NewSymbol("output"),
                     s_ct->GetFunction());
     }
-    
+
     NodeMidiOutput()
     {
         out = new RtMidiOut();
     }
-    
+
     ~NodeMidiOutput()
     {
         delete out;
@@ -69,7 +69,7 @@ public:
         v8::Local<v8::Integer> result = v8::Uint32::New(output->out->getPortCount());
         return scope.Close(result);
     }
-    
+
     static v8::Handle<v8::Value> GetPortName(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -82,7 +82,7 @@ public:
         v8::Local<v8::String> result = v8::String::New(output->out->getPortName(portNumber).c_str());
         return scope.Close(result);
     }
-    
+
     static v8::Handle<v8::Value> OpenPort(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -99,7 +99,7 @@ public:
         output->out->openPort(portNumber);
         return scope.Close(v8::Undefined());
     }
-    
+
     static v8::Handle<v8::Value> OpenVirtualPort(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -112,7 +112,7 @@ public:
         output->out->openVirtualPort(name);
         return scope.Close(v8::Undefined());
     }
-    
+
     static v8::Handle<v8::Value> ClosePort(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -120,7 +120,7 @@ public:
         output->out->closePort();
         return scope.Close(v8::Undefined());
     }
-    
+
     static v8::Handle<v8::Value> SendMessage(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -151,52 +151,52 @@ private:
 public:
     uv_async_t message_async;
     uv_mutex_t message_mutex;
-    
+
     struct MidiMessage
     {
         double deltaTime;
         std::vector<unsigned char> message;
     };
     std::queue<MidiMessage*> message_queue;
-    
+
     static v8::Persistent<v8::FunctionTemplate> s_ct;
     static void Init(v8::Handle<v8::Object> target)
     {
         v8::HandleScope scope;
-        
+
         v8::Local<v8::FunctionTemplate> t = v8::FunctionTemplate::New(New);
-        
+
         s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
         s_ct->InstanceTemplate()->SetInternalFieldCount(1);
-        
+
         s_ct->SetClassName(v8::String::NewSymbol("NodeMidiInput"));
-        
+
         NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortCount", GetPortCount);
         NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortName", GetPortName);
-        
+
         NODE_SET_PROTOTYPE_METHOD(s_ct, "openPort", OpenPort);
         NODE_SET_PROTOTYPE_METHOD(s_ct, "openVirtualPort", OpenVirtualPort);
         NODE_SET_PROTOTYPE_METHOD(s_ct, "closePort", ClosePort);
-        
+
         NODE_SET_PROTOTYPE_METHOD(s_ct, "ignoreTypes", IgnoreTypes);
 
         target->Set(v8::String::NewSymbol("input"),
                     s_ct->GetFunction());
     }
-    
+
     NodeMidiInput()
     {
         in = new RtMidiIn();
         uv_mutex_init(&message_mutex);
     }
-    
+
     ~NodeMidiInput()
     {
         in->closePort();
         delete in;
         uv_mutex_destroy(&message_mutex);
     }
-    
+
     static void EmitMessage(uv_async_t *w, int status)
     {
         assert(status == 0);
@@ -211,8 +211,8 @@ public:
             args[1] = v8::Local<v8::Value>::New(v8::Number::New(message->deltaTime));
             int32_t count = (int32_t)message->message.size();
             v8::Local<v8::Array> data = v8::Array::New(count);
-            for (int32_t i = 0; i < count; ++i) { 
-                data->Set(v8::Number::New(i), v8::Integer::New(message->message[i])); 
+            for (int32_t i = 0; i < count; ++i) {
+                data->Set(v8::Number::New(i), v8::Integer::New(message->message[i]));
             }
             args[2] = v8::Local<v8::Value>::New(data);
             MakeCallback(input->handle_, symbol_emit, 3, args);
@@ -221,7 +221,7 @@ public:
         }
         uv_mutex_unlock(&input->message_mutex);
     }
-    
+
     static void Callback(double deltaTime, std::vector<unsigned char> *message, void *userData)
     {
         NodeMidiInput *input = static_cast<NodeMidiInput*>(userData);
@@ -257,7 +257,7 @@ public:
         v8::Local<v8::Integer> result = v8::Uint32::New(input->in->getPortCount());
         return scope.Close(result);
     }
-    
+
     static v8::Handle<v8::Value> GetPortName(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -270,7 +270,7 @@ public:
         v8::Local<v8::String> result = v8::String::New(input->in->getPortName(portNumber).c_str());
         return scope.Close(result);
     }
-    
+
     static v8::Handle<v8::Value> OpenPort(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -289,7 +289,7 @@ public:
         input->in->openPort(portNumber);
         return scope.Close(v8::Undefined());
     }
-    
+
     static v8::Handle<v8::Value> OpenVirtualPort(const v8::Arguments& args)
     {
         v8::HandleScope scope;
@@ -304,7 +304,7 @@ public:
         input->in->openVirtualPort(name);
         return scope.Close(v8::Undefined());
     }
-    
+
     static v8::Handle<v8::Value> ClosePort(const v8::Arguments& args)
     {
         v8::HandleScope scope;

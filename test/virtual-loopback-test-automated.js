@@ -20,11 +20,11 @@ virtualInput.openVirtualPort(inputName);
 setTimeout(function() {
   var output = new midi.output();
   var input = new midi.input();
-  
+
   input.on('message', function(deltaTime, message) {
     console.log('Input recieved m:' + message + ' d:' + deltaTime);
   });
-  
+
   console.log('Enumerating inputs');
   for (var i = 0; i < input.getPortCount(); ++i) {
     console.log('Input found: ' + input.getPortName(i));
@@ -33,7 +33,7 @@ setTimeout(function() {
       input.openPort(i);
     }
   }
-  
+
   console.log('Enumerating outputs');
   for (var i = 0; i < output.getPortCount(); ++i) {
     console.log('Output found: ' + input.getPortName(i));
@@ -42,15 +42,15 @@ setTimeout(function() {
       output.openPort(i);
     }
   }
-  
+
   var id = setInterval(function() {
     console.log('Sending message');
     output.sendMessage([144, 23, 81]);
   }, 1000);
-  
+
   setTimeout(function() {
     clearInterval(id);
-    
+
     setTimeout(function() {
       input.closePort();
       output.closePort();

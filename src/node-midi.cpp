@@ -304,12 +304,14 @@ public:
         input->in->openVirtualPort(name);
         return scope.Close(v8::Undefined());
     }
-    
+
     static v8::Handle<v8::Value> ClosePort(const v8::Arguments& args)
     {
         v8::HandleScope scope;
         NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
-        input->Unref();
+        if (input->in->isPortOpen()) {
+            input->Unref();
+        }
         input->in->closePort();
         uv_close((uv_handle_t*)&input->message_async, NULL);
         return scope.Close(v8::Undefined());

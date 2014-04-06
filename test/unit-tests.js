@@ -41,6 +41,14 @@ describe('midi.input', function() {
       input.getPortName(999).should.eql('');
     });
   });
+
+  describe('.closePort', function() {
+    var input = new Midi.input();
+
+    it('allows you to close a port that was not opened', function() {
+      input.closePort();
+    });
+  });
 });
 
 describe('midi.output', function() {
@@ -80,6 +88,14 @@ describe('midi.output', function() {
 
     it('returns an empty string for unknown port', function() {
       output.getPortName(999).should.eql('');
+    });
+  });
+
+  describe('.closePort', function() {
+    var output = new Midi.output();
+
+    it('allows you to close a port that was not opened', function() {
+      output.closePort();
     });
   });
 });

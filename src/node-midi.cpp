@@ -309,7 +309,9 @@ public:
     {
         v8::HandleScope scope;
         NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
-        input->Unref();
+        if (input->in->isPortOpen()) {
+            input->Unref();
+        }
         input->in->closePort();
         uv_close((uv_handle_t*)&input->message_async, NULL);
         return scope.Close(v8::Undefined());

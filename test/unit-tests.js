@@ -41,6 +41,52 @@ describe('midi.input', function() {
       input.getPortName(999).should.eql('');
     });
   });
+
+  describe('.openPort', function() {
+    var input = new Midi.input();
+
+    it('requires an argument', function() {
+      (function() {
+        input.openPort();
+      }).should.throw('First argument must be an integer');
+    });
+
+    it('requires an integer', function() {
+      (function() {
+        input.openPort('asdf');
+      }).should.throw('First argument must be an integer');
+    });
+
+    it('requires a valid port', function() {
+      (function() {
+        input.openPort(999);
+      }).should.throw('Invalid MIDI port number');
+    });
+  });
+
+  describe('.openVirtualPort', function() {
+    var input = new Midi.input();
+
+    it('requires an argument', function() {
+      (function() {
+        input.openVirtualPort();
+      }).should.throw('First argument must be a string');
+    });
+
+    it('requires a string', function() {
+      (function() {
+        input.openVirtualPort(999);
+      }).should.throw('First argument must be a string');
+    });
+  });
+
+  describe('.closePort', function() {
+    var input = new Midi.input();
+
+    it('allows you to close a port that was not opened', function() {
+      input.closePort();
+    });
+  });
 });
 
 describe('midi.output', function() {
@@ -80,6 +126,52 @@ describe('midi.output', function() {
 
     it('returns an empty string for unknown port', function() {
       output.getPortName(999).should.eql('');
+    });
+  });
+
+  describe('.openPort', function() {
+    var output = new Midi.output();
+
+    it('requires an argument', function() {
+      (function() {
+        output.openPort();
+      }).should.throw('First argument must be an integer');
+    });
+
+    it('requires an integer', function() {
+      (function() {
+        output.openPort('asdf');
+      }).should.throw('First argument must be an integer');
+    });
+
+    it('requires a valid port', function() {
+      (function() {
+        output.openPort(999);
+      }).should.throw('Invalid MIDI port number');
+    });
+  });
+
+  describe('.openVirtualPort', function() {
+    var output = new Midi.output();
+
+    it('requires an argument', function() {
+      (function() {
+        output.openVirtualPort();
+      }).should.throw('First argument must be a string');
+    });
+
+    it('requires a string', function() {
+      (function() {
+        output.openVirtualPort(999);
+      }).should.throw('First argument must be a string');
+    });
+  });
+
+  describe('.closePort', function() {
+    var output = new Midi.output();
+
+    it('allows you to close a port that was not opened', function() {
+      output.closePort();
     });
   });
 });

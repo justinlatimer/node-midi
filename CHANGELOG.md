@@ -1,5 +1,11 @@
 # node-midi Changelog
 
+## Version ?
+
+* Avoid fatal error closing unopened port. (Andrew Morton)
+* Upgraded RtMidi to 2.1.0. (Hugo Hromic)
+* Fixed compile warnings on Windows. (Hugo Hromic)
+
 ## Version 0.8.1
 
 * Fixing crash when `new` is omitted. (Andrew Morton)

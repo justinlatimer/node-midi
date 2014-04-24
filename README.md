@@ -11,18 +11,18 @@ RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), and Windows
 ### OSX
 
 * Some version of Xcode (or Command Line Tools)
-* Python (for node-gyp) 
+* Python (for node-gyp)
 
 ### Windows
 
-* Microsoft Visual C++(the Express edition works fine)
+* Microsoft Visual C++ (the Express edition works fine)
 * Python (for node-gyp)
 
 ### Linux
 
 * A C++ compiler
 * You must have installed and configured ALSA. Without it this module will **NOT** build.
-	* Install the libasound2-dev package.
+* Install the libasound2-dev package.
 * Python (for node-gyp)
 
 ## Installation
@@ -43,57 +43,61 @@ From source:
 
 ### Input
 
-    var midi = require('midi');
+```js
+var midi = require('midi');
 
-    // Set up a new input.
-    var input = new midi.input();
+// Set up a new input.
+var input = new midi.input();
 
-    // Count the available input ports.
-    input.getPortCount();
+// Count the available input ports.
+input.getPortCount();
 
-    // Get the name of a specified input port.
-    input.getPortName(0);
+// Get the name of a specified input port.
+input.getPortName(0);
 
-    // Configure a callback.
-    input.on('message', function(deltaTime, message) {
-	  console.log('m:' + message + ' d:' + deltaTime);
-    });
+// Configure a callback.
+input.on('message', function(deltaTime, message) {
+  console.log('m:' + message + ' d:' + deltaTime);
+});
 
-    // Open the first available input port.
-    input.openPort(0);
+// Open the first available input port.
+input.openPort(0);
 
-    // Sysex, timing, and active sensing messages are ignored
-    // by default. To enable these message types, pass false for
-    // the appropriate type in the function below.
-    // Order: (Sysex, Timing, Active Sensing)
-    input.ignoreTypes(false, false, false);
+// Sysex, timing, and active sensing messages are ignored
+// by default. To enable these message types, pass false for
+// the appropriate type in the function below.
+// Order: (Sysex, Timing, Active Sensing)
+input.ignoreTypes(false, false, false);
 
-    // ... receive MIDI messages ...
+// ... receive MIDI messages ...
 
-    // Close the port when done.
-    input.closePort();
+// Close the port when done.
+input.closePort();
+```
 
 ### Output
 
-    var midi = require('midi');
+```js
+var midi = require('midi');
 
-    // Set up a new output.
-    var output = new midi.output();
+// Set up a new output.
+var output = new midi.output();
 
-    // Count the available output ports.
-    output.getPortCount();
+// Count the available output ports.
+output.getPortCount();
 
-    // Get the name of a specified output port.
-    output.getPortName(0);
+// Get the name of a specified output port.
+output.getPortName(0);
 
-    // Open the first available output port.
-    output.openPort(0);
+// Open the first available output port.
+output.openPort(0);
 
-    // Send a MIDI message.
-    output.sendMessage([176,22,1]);
+// Send a MIDI message.
+output.sendMessage([176,22,1]);
 
-    // Close the port when done.
-    output.closePort();
+// Close the port when done.
+output.closePort();
+```
 
 ### Virtual Ports
 
@@ -102,26 +106,28 @@ Linux with ALSA you can create a virtual device that other software may
 connect to. This can be done simply by calling openVirtualPort(portName) instead
 of openPort(portNumber).
 
-    var midi = require('midi');
+```js
+var midi = require('midi');
 
-    // Set up a new input.
-    var input = new midi.input();
+// Set up a new input.
+var input = new midi.input();
 
-    // Configure a callback.
-    input.on('message', function(deltaTime, message) {
-        console.log('m:' + message + ' d:' + deltaTime);
-    });
+// Configure a callback.
+input.on('message', function(deltaTime, message) {
+    console.log('m:' + message + ' d:' + deltaTime);
+});
 
-    // Create a virtual input port.
-    input.openVirtualPort("Test Input");
+// Create a virtual input port.
+input.openVirtualPort("Test Input");
 
-    // A midi device "Test Input" is now available for other
-    // software to send messages to.
+// A midi device "Test Input" is now available for other
+// software to send messages to.
 
-    // ... receive MIDI messages ...
+// ... receive MIDI messages ...
 
-    // Close the port when done.
-    input.closePort();
+// Close the port when done.
+input.closePort();
+```
 
 The same can be done with output ports.
 
@@ -131,32 +137,33 @@ You can also use this library with streams! Here are the interfaces
 
 #### Readable Stream
 
-    // create a readable stream
-    var stream1 = midi.createReadStream();
+```js
+// create a readable stream
+var stream1 = midi.createReadStream();
 
-    // createReadStream also accepts an optional `input` param
-    var input = new midi.input();
-    input.openVirtualPort('hello world');
+// createReadStream also accepts an optional `input` param
+var input = new midi.input();
+input.openVirtualPort('hello world');
 
-    var stream2 = midi.createReadStream(input)
+var stream2 = midi.createReadStream(input)
 
-    stream2.pipe(require('fs').createWriteStream('something.bin'));
-
+stream2.pipe(require('fs').createWriteStream('something.bin'));
+```
 
 #### Writable Stream
 
+```js
+// create a writable stream
+var stream1 = midi.createWriteStream();
 
-    // create a writable stream
-    var stream1 = midi.createWriteStream();
+// createWriteStream also accepts an optional `output` param
+var output = new midi.output();
+output.openVirtualPort('hello again');
 
-    // createWriteStream also accepts an optional `output` param
-    var output = new midi.output();
-    output.openVirtualPort('hello again');
+var stream2 = midi.createWriteStream(output);
 
-    var stream2 = midi.createWriteStream(output);
-
-    require('fs').createReadStream('something.bin').pipe(stream2);
-
+require('fs').createReadStream('something.bin').pipe(stream2);
+```
 
 ## References
 
@@ -170,7 +177,7 @@ You can also use this library with streams! Here are the interfaces
   * Andrew Morton - [@drewish](https://github.com/drewish)
 
 ## Contributors
-  
+
   * Luc Deschenaux - [@luxigo](https://github.com/luxigo)
   * Michael Alyn Miller - [@malyn](https://github.com/malyn)
   * Hugo Hromic - [@hhromic](https://github.com/hhromic)

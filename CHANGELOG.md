@@ -1,6 +1,6 @@
 # node-midi Changelog
 
-## Version ?
+## Version 0.9.0
 
 * Avoid fatal error closing unopened port. (Andrew Morton)
 * Upgraded RtMidi to 2.1.0. (Hugo Hromic)

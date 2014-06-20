@@ -1,15 +1,15 @@
 #include <v8.h>
 #include <node.h>
 #include <node_object_wrap.h>
+#include <node_version.h>
+#include <nan.h>
 #include <queue>
 #include <uv.h>
 
 #include "lib/RtMidi/RtMidi.h"
 #include "lib/RtMidi/RtMidi.cpp"
 
-using namespace node;
-
-class NodeMidiOutput : ObjectWrap
+class NodeMidiOutput : public node::ObjectWrap
 {
 private:
     RtMidiOut* out;
@@ -17,25 +17,24 @@ public:
     static v8::Persistent<v8::FunctionTemplate> s_ct;
     static void Init(v8::Handle<v8::Object> target)
     {
-        v8::HandleScope scope;
+        NanScope();
 
-        v8::Local<v8::FunctionTemplate> t = v8::FunctionTemplate::New(New);
+        v8::Local<v8::FunctionTemplate> t = NanNew<v8::FunctionTemplate>(NodeMidiOutput::New);
 
-        s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
-        s_ct->InstanceTemplate()->SetInternalFieldCount(1);
-        s_ct->SetClassName(v8::String::NewSymbol("NodeMidiOutput"));
+        NanAssignPersistent(s_ct, t);
+        t->SetClassName(NanNew<v8::String>("NodeMidiOutput"));
+        t->InstanceTemplate()->SetInternalFieldCount(1);
 
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortCount", GetPortCount);
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortName", GetPortName);
+        NODE_SET_PROTOTYPE_METHOD(t, "getPortCount", GetPortCount);
+        NODE_SET_PROTOTYPE_METHOD(t, "getPortName", GetPortName);
 
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "openPort", OpenPort);
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "openVirtualPort", OpenVirtualPort);
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "closePort", ClosePort);
+        NODE_SET_PROTOTYPE_METHOD(t, "openPort", OpenPort);
+        NODE_SET_PROTOTYPE_METHOD(t, "openVirtualPort", OpenVirtualPort);
+        NODE_SET_PROTOTYPE_METHOD(t, "closePort", ClosePort);
 
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "sendMessage", SendMessage);
+        NODE_SET_PROTOTYPE_METHOD(t, "sendMessage", SendMessage);
 
-        target->Set(v8::String::NewSymbol("output"),
-                    s_ct->GetFunction());
+        target->Set(NanNew<v8::String>("output"), t->GetFunction());
     }
 
     NodeMidiOutput()
@@ -48,102 +47,108 @@ public:
         delete out;
     }
 
-    static v8::Handle<v8::Value> New(const v8::Arguments& args)
+    static NAN_METHOD(New)
     {
-        v8::HandleScope scope;
+        NanScope();
 
         if (!args.IsConstructCall()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("Use the new operator to create instances of this object.")));
+            return NanThrowTypeError("Use the new operator to create instances of this object.");
         }
 
         NodeMidiOutput* output = new NodeMidiOutput();
         output->Wrap(args.This());
-        return args.This();
+
+        NanReturnValue(args.This());
     }
 
-    static v8::Handle<v8::Value> GetPortCount(const v8::Arguments& args)
+    static NAN_METHOD(GetPortCount)
     {
-        v8::HandleScope scope;
-        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
-        v8::Local<v8::Integer> result = v8::Uint32::New(output->out->getPortCount());
-        return scope.Close(result);
+        NanScope();
+        NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        v8::Local<v8::Integer> result = NanNew<v8::Uint32>(output->out->getPortCount());
+        NanReturnValue(result);
     }
 
-    static v8::Handle<v8::Value> GetPortName(const v8::Arguments& args)
+    static NAN_METHOD(GetPortName)
     {
-        v8::HandleScope scope;
-        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        NanScope();
+        NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (args.Length() == 0 || !args[0]->IsUint32()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("First argument must be an integer")));
+            return NanThrowTypeError("First argument must be an integer");
         }
+
         unsigned int portNumber = args[0]->Uint32Value();
-        v8::Local<v8::String> result = v8::String::New(output->out->getPortName(portNumber).c_str());
-        return scope.Close(result);
+        v8::Local<v8::String> result = NanNew<v8::String>(output->out->getPortName(portNumber).c_str());
+        NanReturnValue(result);
     }
 
-    static v8::Handle<v8::Value> OpenPort(const v8::Arguments& args)
+    static NAN_METHOD(OpenPort)
     {
-        v8::HandleScope scope;
-        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        NanScope();
+        NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (args.Length() == 0 || !args[0]->IsUint32()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("First argument must be an integer")));
+            return NanThrowTypeError("First argument must be an integer");
         }
         unsigned int portNumber = args[0]->Uint32Value();
         if (portNumber >= output->out->getPortCount()) {
-            return ThrowException(v8::Exception::RangeError(
-                v8::String::New("Invalid MIDI port number")));
+            return NanThrowRangeError("Invalid MIDI port number");
         }
+
         output->out->openPort(portNumber);
-        return scope.Close(v8::Undefined());
+        NanReturnUndefined();
     }
 
-    static v8::Handle<v8::Value> OpenVirtualPort(const v8::Arguments& args)
+    static NAN_METHOD(OpenVirtualPort)
     {
-        v8::HandleScope scope;
-        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        NanScope();
+        NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (args.Length() == 0 || !args[0]->IsString()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("First argument must be a string")));
+            return NanThrowTypeError("First argument must be a string");
         }
-        std::string name(*v8::String::AsciiValue(args[0]));
+
+        // This is sort of nasty but it's the simplest way to get an ASCII C
+        // string using NAN.
+        size_t count = 0;
+        char *buffer = (char*)NanRawString(args[0], Nan::ASCII, &count, NULL, 0, 0);
+        assert(count > 0);
+        std::string name(buffer);
+        delete[] buffer;
+
         output->out->openVirtualPort(name);
-        return scope.Close(v8::Undefined());
+        NanReturnUndefined();
     }
 
-    static v8::Handle<v8::Value> ClosePort(const v8::Arguments& args)
+    static NAN_METHOD(ClosePort)
     {
-        v8::HandleScope scope;
-        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        NanScope();
+        NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         output->out->closePort();
-        return scope.Close(v8::Undefined());
+        NanReturnUndefined();
     }
 
-    static v8::Handle<v8::Value> SendMessage(const v8::Arguments& args)
+    static NAN_METHOD(SendMessage)
     {
-        v8::HandleScope scope;
-        NodeMidiOutput* output = ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        NanScope();
+        NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (args.Length() == 0 || !args[0]->IsArray()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("First argument must be an array")));
+            return NanThrowTypeError("First argument must be an array");
         }
+
         v8::Local<v8::Object> message = args[0]->ToObject();
-        int32_t messageLength = message->Get(v8::String::New("length"))->Int32Value();
+        int32_t messageLength = message->Get(NanNew<v8::String>("length"))->Int32Value();
         std::vector<unsigned char> messageOutput;
         for (int32_t i = 0; i != messageLength; ++i) {
-            messageOutput.push_back(message->Get(v8::Integer::New(i))->Int32Value());
+            messageOutput.push_back(message->Get(NanNew<v8::Integer>(i))->Int32Value());
         }
         output->out->sendMessage(&messageOutput);
-        return scope.Close(v8::Undefined());
+        NanReturnUndefined();
     }
 };
 
 const char* symbol_emit = "emit";
 const char* symbol_message = "message";
 
-class NodeMidiInput : public ObjectWrap
+class NodeMidiInput : public node::ObjectWrap
 {
 private:
     RtMidiIn* in;
@@ -162,26 +167,24 @@ public:
     static v8::Persistent<v8::FunctionTemplate> s_ct;
     static void Init(v8::Handle<v8::Object> target)
     {
-        v8::HandleScope scope;
+        NanScope();
 
-        v8::Local<v8::FunctionTemplate> t = v8::FunctionTemplate::New(New);
+        v8::Local<v8::FunctionTemplate> t = NanNew<v8::FunctionTemplate>(NodeMidiInput::New);
 
-        s_ct = v8::Persistent<v8::FunctionTemplate>::New(t);
-        s_ct->InstanceTemplate()->SetInternalFieldCount(1);
+        NanAssignPersistent(s_ct, t);
+        t->SetClassName(NanNew<v8::String>("NodeMidiInput"));
+        t->InstanceTemplate()->SetInternalFieldCount(1);
 
-        s_ct->SetClassName(v8::String::NewSymbol("NodeMidiInput"));
+        NODE_SET_PROTOTYPE_METHOD(t, "getPortCount", GetPortCount);
+        NODE_SET_PROTOTYPE_METHOD(t, "getPortName", GetPortName);
 
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortCount", GetPortCount);
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "getPortName", GetPortName);
+        NODE_SET_PROTOTYPE_METHOD(t, "openPort", OpenPort);
+        NODE_SET_PROTOTYPE_METHOD(t, "openVirtualPort", OpenVirtualPort);
+        NODE_SET_PROTOTYPE_METHOD(t, "closePort", ClosePort);
 
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "openPort", OpenPort);
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "openVirtualPort", OpenVirtualPort);
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "closePort", ClosePort);
+        NODE_SET_PROTOTYPE_METHOD(t, "ignoreTypes", IgnoreTypes);
 
-        NODE_SET_PROTOTYPE_METHOD(s_ct, "ignoreTypes", IgnoreTypes);
-
-        target->Set(v8::String::NewSymbol("input"),
-                    s_ct->GetFunction());
+        target->Set(NanNew<v8::String>("input"), t->GetFunction());
     }
 
     NodeMidiInput()
@@ -197,25 +200,29 @@ public:
         uv_mutex_destroy(&message_mutex);
     }
 
-    static void EmitMessage(uv_async_t *w, int status)
-    {
+#if NODE_VERSION_AT_LEAST(0, 11, 0)
+    static void EmitMessage(uv_async_t *w) {
+#else
+    static void EmitMessage(uv_async_t *w, int status) {
         assert(status == 0);
-        v8::HandleScope scope;
+#endif
+        NanScope();
         NodeMidiInput *input = static_cast<NodeMidiInput*>(w->data);
         uv_mutex_lock(&input->message_mutex);
+        v8::Local<v8::Function> emitFunction = input->handle()->Get(NanNew<v8::String>(symbol_emit)).As<v8::Function>();
         while (!input->message_queue.empty())
         {
             MidiMessage* message = input->message_queue.front();
             v8::Local<v8::Value> args[3];
-            args[0] = v8::String::New(symbol_message);
-            args[1] = v8::Local<v8::Value>::New(v8::Number::New(message->deltaTime));
+            args[0] = NanNew<v8::String>(symbol_message);
+            args[1] = NanNew<v8::Number>(message->deltaTime);
             int32_t count = (int32_t)message->message.size();
-            v8::Local<v8::Array> data = v8::Array::New(count);
+            v8::Local<v8::Array> data = NanNew<v8::Array>(count);
             for (int32_t i = 0; i < count; ++i) {
-                data->Set(v8::Number::New(i), v8::Integer::New(message->message[i]));
+                data->Set(NanNew<v8::Number>(i), NanNew<v8::Integer>(message->message[i]));
             }
-            args[2] = v8::Local<v8::Value>::New(data);
-            MakeCallback(input->handle_, symbol_emit, 3, args);
+            args[2] = data;
+            NanMakeCallback(input->handle(), emitFunction, 3, args);
             input->message_queue.pop();
             delete message;
         }
@@ -234,102 +241,108 @@ public:
         uv_async_send(&input->message_async);
     }
 
-    static v8::Handle<v8::Value> New(const v8::Arguments& args)
+    static NAN_METHOD(New)
     {
-        v8::HandleScope scope;
+        NanScope();
 
         if (!args.IsConstructCall()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("Use the new operator to create instances of this object.")));
+            return NanThrowTypeError("Use the new operator to create instances of this object.");
         }
 
         NodeMidiInput* input = new NodeMidiInput();
         input->message_async.data = input;
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->Wrap(args.This());
-        return args.This();
+
+        NanReturnValue(args.This());
     }
 
-    static v8::Handle<v8::Value> GetPortCount(const v8::Arguments& args)
+    static NAN_METHOD(GetPortCount)
     {
-        v8::HandleScope scope;
-        NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
-        v8::Local<v8::Integer> result = v8::Uint32::New(input->in->getPortCount());
-        return scope.Close(result);
+        NanScope();
+        NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        v8::Local<v8::Integer> result = NanNew<v8::Uint32>(input->in->getPortCount());
+        NanReturnValue(result);
     }
 
-    static v8::Handle<v8::Value> GetPortName(const v8::Arguments& args)
+    static NAN_METHOD(GetPortName)
     {
-        v8::HandleScope scope;
-        NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        NanScope();
+        NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (args.Length() == 0 || !args[0]->IsUint32()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("First argument must be an integer")));
+            return NanThrowTypeError("First argument must be an integer");
         }
+
         unsigned int portNumber = args[0]->Uint32Value();
-        v8::Local<v8::String> result = v8::String::New(input->in->getPortName(portNumber).c_str());
-        return scope.Close(result);
+        v8::Local<v8::String> result = NanNew<v8::String>(input->in->getPortName(portNumber).c_str());
+        NanReturnValue(result);
     }
 
-    static v8::Handle<v8::Value> OpenPort(const v8::Arguments& args)
+    static NAN_METHOD(OpenPort)
     {
-        v8::HandleScope scope;
-        NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        NanScope();
+        NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (args.Length() == 0 || !args[0]->IsUint32()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("First argument must be an integer")));
+            return NanThrowTypeError("First argument must be an integer");
         }
         unsigned int portNumber = args[0]->Uint32Value();
         if (portNumber >= input->in->getPortCount()) {
-            return ThrowException(v8::Exception::RangeError(
-                v8::String::New("Invalid MIDI port number")));
+            return NanThrowRangeError("Invalid MIDI port number");
         }
+
         input->Ref();
-        input->in->setCallback(&NodeMidiInput::Callback, ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
+        input->in->setCallback(&NodeMidiInput::Callback, node::ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
         input->in->openPort(portNumber);
-        return scope.Close(v8::Undefined());
+        NanReturnUndefined();
     }
 
-    static v8::Handle<v8::Value> OpenVirtualPort(const v8::Arguments& args)
+    static NAN_METHOD(OpenVirtualPort)
     {
-        v8::HandleScope scope;
-        NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        NanScope();
+        NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (args.Length() == 0 || !args[0]->IsString()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("First argument must be a string")));
+            return NanThrowTypeError("First argument must be a string");
         }
-        std::string name(*v8::String::AsciiValue(args[0]));
+
+        // This is sort of nasty but it's the simplest way to get an ASCII C
+        // string using NAN = 0.
+        size_t count = 0;
+        char *buffer = (char*)NanRawString(args[0], Nan::ASCII, &count, NULL, 0, 0);
+        assert(count > 0);
+        std::string name(buffer);
+        delete[] buffer;
+
         input->Ref();
-        input->in->setCallback(&NodeMidiInput::Callback, ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
+        input->in->setCallback(&NodeMidiInput::Callback, node::ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
         input->in->openVirtualPort(name);
-        return scope.Close(v8::Undefined());
+        NanReturnUndefined();
     }
 
-    static v8::Handle<v8::Value> ClosePort(const v8::Arguments& args)
+    static NAN_METHOD(ClosePort)
     {
-        v8::HandleScope scope;
-        NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        NanScope();
+        NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (input->in->isPortOpen()) {
             input->Unref();
         }
         input->in->closePort();
         uv_close((uv_handle_t*)&input->message_async, NULL);
-        return scope.Close(v8::Undefined());
+        NanReturnUndefined();
     }
 
-    static v8::Handle<v8::Value> IgnoreTypes(const v8::Arguments& args)
+    static NAN_METHOD(IgnoreTypes)
     {
-        v8::HandleScope scope;
-        NodeMidiInput* input = ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        NanScope();
+        NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (args.Length() != 3 || !args[0]->IsBoolean() || !args[1]->IsBoolean() || !args[2]->IsBoolean()) {
-            return ThrowException(v8::Exception::TypeError(
-                v8::String::New("Arguments must be boolean")));
+            return NanThrowTypeError("Arguments must be boolean");
         }
+
         bool filter_sysex = args[0]->BooleanValue();
         bool filter_timing = args[1]->BooleanValue();
         bool filter_sensing = args[2]->BooleanValue();
         input->in->ignoreTypes(filter_sysex, filter_timing, filter_sensing);
-        return scope.Close(v8::Undefined());
+        NanReturnUndefined();
     }
 };
 

@@ -7,24 +7,28 @@
   "main": "midi.js",
   "description": "MIDI hardware IO",
   "author": {
-    "name" : "Justin Latimer",
-    "email" : "justinlatimer@gmail.com",
-    "url" : "http://www.justinlatimer.com/"
+    "name": "Justin Latimer",
+    "email": "justinlatimer@gmail.com",
+    "url": "http://www.justinlatimer.com/"
   },
   "contributors": [
     {
       "name": "Elijah Insua",
       "email": "tmpvar@gmail.com"
-    }, {
+    },
+    {
       "name": "Andrew Morton",
       "email": "drewish@katherinehouse.com"
-    }, {
+    },
+    {
       "name": "Luc Deschenaux",
       "email": "luc.deschenaux@freesurf.ch"
-    }, {
+    },
+    {
       "name": "Michael Alyn Miller",
       "email": "malyn@strangegizmo.com"
-    }, {
+    },
+    {
       "name": "Hugo Hromic"
     }
   ],
@@ -32,15 +36,15 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "bindings": "*"
+    "bindings": "*",
+    "nan": "~1.2.0"
   },
   "devDependencies": {
     "mocha": ">= 1.17.x",
     "should": ">= 3.1.x"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/justinlatimer/node-midi.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justinlatimer/node-midi.git"
   }
 }
-

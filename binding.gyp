@@ -3,6 +3,7 @@
     {
       'target_name': 'midi',
       'include_dirs': [
+        "<!(node -e \"require('nan')\")",
         'src'
       ],
       'sources': [

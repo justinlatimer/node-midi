@@ -67,6 +67,9 @@ input.openPort(0);
 // by default. To enable these message types, pass false for
 // the appropriate type in the function below.
 // Order: (Sysex, Timing, Active Sensing)
+// For example if you want to receive only MIDI Clock beats
+// you should use 
+// input.ignoreTypes(true, false, true)
 input.ignoreTypes(false, false, false);
 
 // ... receive MIDI messages ...

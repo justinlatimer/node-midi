@@ -1,5 +1,9 @@
 # node-midi Changelog
 
+## Version 0.9.1
+
+* Use NAN to support node 0.8-0.12. (Andrew Morton)
+
 ## Version 0.9.0
 
 * Avoid fatal error closing unopened port. (Andrew Morton)

@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "bindings": "*",
-    "nan": "~1.2.0"
+    "nan": "~1.6.0"
   },
   "devDependencies": {
     "mocha": ">= 1.17.x",

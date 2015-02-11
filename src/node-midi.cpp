@@ -106,13 +106,7 @@ public:
             return NanThrowTypeError("First argument must be a string");
         }
 
-        // This is sort of nasty but it's the simplest way to get an ASCII C
-        // string using NAN.
-        size_t count = 0;
-        char *buffer = (char*)NanRawString(args[0], Nan::ASCII, &count, NULL, 0, 0);
-        assert(count > 0);
-        std::string name(buffer);
-        delete[] buffer;
+        std::string name(*NanAsciiString(args[0]));
 
         output->out->openVirtualPort(name);
         NanReturnUndefined();
@@ -209,7 +203,7 @@ public:
         NanScope();
         NodeMidiInput *input = static_cast<NodeMidiInput*>(w->data);
         uv_mutex_lock(&input->message_mutex);
-        v8::Local<v8::Function> emitFunction = input->handle()->Get(NanNew<v8::String>(symbol_emit)).As<v8::Function>();
+        v8::Local<v8::Function> emitFunction = NanObjectWrapHandle(input)->Get(NanNew<v8::String>(symbol_emit)).As<v8::Function>();
         while (!input->message_queue.empty())
         {
             MidiMessage* message = input->message_queue.front();
@@ -222,7 +216,7 @@ public:
                 data->Set(NanNew<v8::Number>(i), NanNew<v8::Integer>(message->message[i]));
             }
             args[2] = data;
-            NanMakeCallback(input->handle(), emitFunction, 3, args);
+            NanMakeCallback(NanObjectWrapHandle(input), emitFunction, 3, args);
             input->message_queue.pop();
             delete message;
         }
@@ -304,13 +298,7 @@ public:
             return NanThrowTypeError("First argument must be a string");
         }
 
-        // This is sort of nasty but it's the simplest way to get an ASCII C
-        // string using NAN = 0.
-        size_t count = 0;
-        char *buffer = (char*)NanRawString(args[0], Nan::ASCII, &count, NULL, 0, 0);
-        assert(count > 0);
-        std::string name(buffer);
-        delete[] buffer;
+        std::string name(*NanAsciiString(args[0]));
 
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, node::ObjectWrap::Unwrap<NodeMidiInput>(args.This()));

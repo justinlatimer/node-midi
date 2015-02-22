@@ -194,14 +194,10 @@ public:
         uv_mutex_destroy(&message_mutex);
     }
 
-#if NODE_VERSION_AT_LEAST(0, 11, 0)
-    static void EmitMessage(uv_async_t *w) {
-#else
-    static void EmitMessage(uv_async_t *w, int status) {
-        assert(status == 0);
-#endif
+    static NAUV_WORK_CB(EmitMessage)
+    {
         NanScope();
-        NodeMidiInput *input = static_cast<NodeMidiInput*>(w->data);
+        NodeMidiInput *input = static_cast<NodeMidiInput*>(async->data);
         uv_mutex_lock(&input->message_mutex);
         v8::Local<v8::Function> emitFunction = NanObjectWrapHandle(input)->Get(NanNew<v8::String>(symbol_emit)).As<v8::Function>();
         while (!input->message_queue.empty())

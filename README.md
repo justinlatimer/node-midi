@@ -6,6 +6,8 @@ A node.js wrapper for the RtMidi C++ library that provides realtime MIDI I/O.
 RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), and Windows
 (Multimedia).
 
+[![Build Status](https://travis-ci.org/justinlatimer/node-midi.svg)](https://travis-ci.org/justinlatimer/node-midi)
+
 ## Prerequisites
 
 ### OSX

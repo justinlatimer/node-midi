@@ -1,5 +1,9 @@
 # node-midi Changelog
 
+## Version 0.9.2
+
+* More NAN use for broader support (nw.js, iojs). (Andrew Morton)
+
 ## Version 0.9.1
 
 * Use NAN to support node 0.8-0.12. (Andrew Morton)

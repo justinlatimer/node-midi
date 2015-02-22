@@ -2,7 +2,7 @@
   "name": "midi",
   "version": "v0.9.1",
   "scripts": {
-    "test": "node test/virtual-loopback-test-automated.js"
+    "test": "mocha test/unit-tests.js && node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
   "description": "MIDI hardware IO",

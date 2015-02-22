@@ -36,12 +36,12 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "bindings": "*",
+    "bindings": "~1.2.1",
     "nan": "~1.6.0"
   },
   "devDependencies": {
-    "mocha": ">= 1.17.x",
-    "should": ">= 3.1.x"
+    "mocha": ">= 2.1.0",
+    "should": ">= 5.0.1"
   },
   "repository": {
     "type": "git",

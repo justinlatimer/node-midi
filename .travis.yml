@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "0.12"
+  - "0.10"
+  - "0.8"
+  - "iojs"
+  - "iojs-v1.0.4"
+before_install:
+ - sudo apt-get install libasound2-dev alsa-utils alsa-oss
+notifications:
+  email: false
+# Travis has no snd-dummy driver (https://github.com/travis-ci/travis-ci/issues/1754)
+# so our tests won't run. We run `npm install` as the test script so build errors
+# appear as test failures.
+install: true
+script: npm install

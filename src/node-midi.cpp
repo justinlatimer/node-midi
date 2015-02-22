@@ -245,7 +245,7 @@ public:
 
         NodeMidiInput* input = new NodeMidiInput();
         input->message_async.data = input;
-        uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
+        uv_async_init(uv_default_loop(), &input->message_async, (uv_async_cb) NodeMidiInput::EmitMessage);
         input->Wrap(args.This());
 
         NanReturnValue(args.This());

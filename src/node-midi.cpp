@@ -303,7 +303,7 @@ public:
         }
 
         input->Ref();
-        input->in->setCallback(&NodeMidiInput::Callback, node::ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
+        input->in->setCallback(&NodeMidiInput::Callback, input);
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->in->openPort(portNumber);
         NanReturnUndefined();
@@ -323,7 +323,7 @@ public:
         std::string name(*NanAsciiString(args[0]));
 
         input->Ref();
-        input->in->setCallback(&NodeMidiInput::Callback, node::ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
+        input->in->setCallback(&NodeMidiInput::Callback, input);
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->in->openVirtualPort(name);
         NanReturnUndefined();
@@ -339,6 +339,7 @@ public:
 
         input->Unref();
         input->in->closePort();
+        input->in->cancelCallback();
         uv_close((uv_handle_t*)&input->message_async, NULL);
         NanReturnUndefined();
     }

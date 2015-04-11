@@ -31,6 +31,7 @@ public:
         NODE_SET_PROTOTYPE_METHOD(t, "openPort", OpenPort);
         NODE_SET_PROTOTYPE_METHOD(t, "openVirtualPort", OpenVirtualPort);
         NODE_SET_PROTOTYPE_METHOD(t, "closePort", ClosePort);
+        NODE_SET_PROTOTYPE_METHOD(t, "isPortOpen", IsPortOpen);
 
         NODE_SET_PROTOTYPE_METHOD(t, "sendMessage", SendMessage);
 
@@ -120,6 +121,14 @@ public:
         NanReturnUndefined();
     }
 
+    static NAN_METHOD(IsPortOpen)
+    {
+        NanScope();
+        NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        v8::Local<v8::Boolean> result = NanNew<v8::Boolean>(output->out->isPortOpen());
+        NanReturnValue(result);
+    }
+
     static NAN_METHOD(SendMessage)
     {
         NanScope();
@@ -175,6 +184,7 @@ public:
         NODE_SET_PROTOTYPE_METHOD(t, "openPort", OpenPort);
         NODE_SET_PROTOTYPE_METHOD(t, "openVirtualPort", OpenVirtualPort);
         NODE_SET_PROTOTYPE_METHOD(t, "closePort", ClosePort);
+        NODE_SET_PROTOTYPE_METHOD(t, "isPortOpen", IsPortOpen);
 
         NODE_SET_PROTOTYPE_METHOD(t, "ignoreTypes", IgnoreTypes);
 
@@ -312,6 +322,14 @@ public:
         input->in->closePort();
         uv_close((uv_handle_t*)&input->message_async, NULL);
         NanReturnUndefined();
+    }
+
+    static NAN_METHOD(IsPortOpen)
+    {
+        NanScope();
+        NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        v8::Local<v8::Boolean> result = NanNew<v8::Boolean>(input->in->isPortOpen());
+        NanReturnValue(result);
     }
 
     static NAN_METHOD(IgnoreTypes)

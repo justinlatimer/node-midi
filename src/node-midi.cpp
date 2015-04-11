@@ -87,6 +87,9 @@ public:
     {
         NanScope();
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        if (output->out->isPortOpen()) {
+            return NanThrowError("Port already open");
+        }
         if (args.Length() == 0 || !args[0]->IsUint32()) {
             return NanThrowTypeError("First argument must be an integer");
         }
@@ -103,6 +106,9 @@ public:
     {
         NanScope();
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        if (output->out->isPortOpen()) {
+            return NanThrowError("Port already open");
+        }
         if (args.Length() == 0 || !args[0]->IsString()) {
             return NanThrowTypeError("First argument must be a string");
         }
@@ -117,6 +123,10 @@ public:
     {
         NanScope();
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
+        if (!output->out->isPortOpen()) {
+            return NanThrowError("Port already closed");
+        }
+
         output->out->closePort();
         NanReturnUndefined();
     }
@@ -282,6 +292,9 @@ public:
     {
         NanScope();
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        if (input->in->isPortOpen()) {
+            return NanThrowError("Port already open");
+        }
         if (args.Length() == 0 || !args[0]->IsUint32()) {
             return NanThrowTypeError("First argument must be an integer");
         }
@@ -300,6 +313,9 @@ public:
     {
         NanScope();
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        if (input->in->isPortOpen()) {
+            return NanThrowError("Port already open");
+        }
         if (args.Length() == 0 || !args[0]->IsString()) {
             return NanThrowTypeError("First argument must be a string");
         }
@@ -316,9 +332,11 @@ public:
     {
         NanScope();
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
-        if (input->in->isPortOpen()) {
-            input->Unref();
+        if (!input->in->isPortOpen()) {
+            return NanThrowError("Port already closed");
         }
+
+        input->Unref();
         input->in->closePort();
         uv_close((uv_handle_t*)&input->message_async, NULL);
         NanReturnUndefined();

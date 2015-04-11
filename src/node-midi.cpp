@@ -261,7 +261,6 @@ public:
 
         NodeMidiInput* input = new NodeMidiInput();
         input->message_async.data = input;
-        uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->Wrap(args.This());
 
         NanReturnValue(args.This());
@@ -305,6 +304,7 @@ public:
 
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, node::ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
+        uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->in->openPort(portNumber);
         NanReturnUndefined();
     }
@@ -324,6 +324,7 @@ public:
 
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, node::ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
+        uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->in->openVirtualPort(name);
         NanReturnUndefined();
     }

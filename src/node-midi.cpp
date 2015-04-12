@@ -88,7 +88,8 @@ public:
         NanScope();
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (output->out->isPortOpen()) {
-            return NanThrowError("Port already open");
+            NanReturnValue(NanNew<v8::Boolean>(false));
+            return;
         }
         if (args.Length() == 0 || !args[0]->IsUint32()) {
             return NanThrowTypeError("First argument must be an integer");
@@ -99,7 +100,7 @@ public:
         }
 
         output->out->openPort(portNumber);
-        NanReturnUndefined();
+        NanReturnValue(NanNew<v8::Boolean>(true));
     }
 
     static NAN_METHOD(OpenVirtualPort)
@@ -107,7 +108,8 @@ public:
         NanScope();
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (output->out->isPortOpen()) {
-            return NanThrowError("Port already open");
+            NanReturnValue(NanNew<v8::Boolean>(false));
+            return;
         }
         if (args.Length() == 0 || !args[0]->IsString()) {
             return NanThrowTypeError("First argument must be a string");
@@ -116,7 +118,7 @@ public:
         std::string name(*NanAsciiString(args[0]));
 
         output->out->openVirtualPort(name);
-        NanReturnUndefined();
+        NanReturnValue(NanNew<v8::Boolean>(true));
     }
 
     static NAN_METHOD(ClosePort)
@@ -124,11 +126,12 @@ public:
         NanScope();
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (!output->out->isPortOpen()) {
-            return NanThrowError("Port already closed");
+            NanReturnValue(NanNew<v8::Boolean>(false));
+            return;
         }
 
         output->out->closePort();
-        NanReturnUndefined();
+        NanReturnValue(NanNew<v8::Boolean>(true));
     }
 
     static NAN_METHOD(IsPortOpen)
@@ -292,7 +295,8 @@ public:
         NanScope();
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (input->in->isPortOpen()) {
-            return NanThrowError("Port already open");
+            NanReturnValue(NanNew<v8::Boolean>(false));
+            return;
         }
         if (args.Length() == 0 || !args[0]->IsUint32()) {
             return NanThrowTypeError("First argument must be an integer");
@@ -306,7 +310,7 @@ public:
         input->in->setCallback(&NodeMidiInput::Callback, input);
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->in->openPort(portNumber);
-        NanReturnUndefined();
+        NanReturnValue(NanNew<v8::Boolean>(true));
     }
 
     static NAN_METHOD(OpenVirtualPort)
@@ -314,7 +318,8 @@ public:
         NanScope();
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (input->in->isPortOpen()) {
-            return NanThrowError("Port already open");
+            NanReturnValue(NanNew<v8::Boolean>(false));
+            return;
         }
         if (args.Length() == 0 || !args[0]->IsString()) {
             return NanThrowTypeError("First argument must be a string");
@@ -326,7 +331,7 @@ public:
         input->in->setCallback(&NodeMidiInput::Callback, input);
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->in->openVirtualPort(name);
-        NanReturnUndefined();
+        NanReturnValue(NanNew<v8::Boolean>(true));
     }
 
     static NAN_METHOD(ClosePort)
@@ -334,14 +339,15 @@ public:
         NanScope();
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (!input->in->isPortOpen()) {
-            return NanThrowError("Port already closed");
+            NanReturnValue(NanNew<v8::Boolean>(false));
+            return;
         }
 
         input->Unref();
         input->in->closePort();
         input->in->cancelCallback();
         uv_close((uv_handle_t*)&input->message_async, NULL);
-        NanReturnUndefined();
+        NanReturnValue(NanNew<v8::Boolean>(true));
     }
 
     static NAN_METHOD(IsPortOpen)

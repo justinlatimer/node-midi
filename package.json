@@ -37,11 +37,11 @@
   },
   "dependencies": {
     "bindings": "~1.2.1",
-    "nan": "~1.6.0"
+    "nan": "~1.7.0"
   },
   "devDependencies": {
-    "mocha": ">= 2.1.0",
-    "should": ">= 5.0.1"
+    "mocha": ">= 2.2.4",
+    "should": ">= 5.2.0"
   },
   "repository": {
     "type": "git",

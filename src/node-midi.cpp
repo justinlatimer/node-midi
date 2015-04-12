@@ -51,14 +51,13 @@ public:
     static NAN_METHOD(New)
     {
         NanScope();
-
         if (!args.IsConstructCall()) {
-            return NanThrowTypeError("Use the new operator to create instances of this object.");
+            NanThrowTypeError("Use the new operator to create instances of this object.");
+            NanReturnUndefined();
         }
 
         NodeMidiOutput* output = new NodeMidiOutput();
         output->Wrap(args.This());
-
         NanReturnValue(args.This());
     }
 
@@ -75,7 +74,8 @@ public:
         NanScope();
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (args.Length() == 0 || !args[0]->IsUint32()) {
-            return NanThrowTypeError("First argument must be an integer");
+            NanThrowTypeError("First argument must be an integer");
+            NanReturnUndefined();
         }
 
         unsigned int portNumber = args[0]->Uint32Value();
@@ -89,14 +89,15 @@ public:
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (output->out->isPortOpen()) {
             NanReturnValue(NanNew<v8::Boolean>(false));
-            return;
         }
         if (args.Length() == 0 || !args[0]->IsUint32()) {
-            return NanThrowTypeError("First argument must be an integer");
+            NanThrowTypeError("First argument must be an integer");
+            NanReturnUndefined();
         }
         unsigned int portNumber = args[0]->Uint32Value();
         if (portNumber >= output->out->getPortCount()) {
-            return NanThrowRangeError("Invalid MIDI port number");
+            NanThrowRangeError("Invalid MIDI port number");
+            NanReturnUndefined();
         }
 
         output->out->openPort(portNumber);
@@ -109,14 +110,13 @@ public:
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (output->out->isPortOpen()) {
             NanReturnValue(NanNew<v8::Boolean>(false));
-            return;
         }
         if (args.Length() == 0 || !args[0]->IsString()) {
-            return NanThrowTypeError("First argument must be a string");
+            NanThrowTypeError("First argument must be a string");
+            NanReturnUndefined();
         }
 
         std::string name(*NanAsciiString(args[0]));
-
         output->out->openVirtualPort(name);
         NanReturnValue(NanNew<v8::Boolean>(true));
     }
@@ -127,7 +127,6 @@ public:
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (!output->out->isPortOpen()) {
             NanReturnValue(NanNew<v8::Boolean>(false));
-            return;
         }
 
         output->out->closePort();
@@ -147,7 +146,8 @@ public:
         NanScope();
         NodeMidiOutput* output = node::ObjectWrap::Unwrap<NodeMidiOutput>(args.This());
         if (args.Length() == 0 || !args[0]->IsArray()) {
-            return NanThrowTypeError("First argument must be an array");
+            NanThrowTypeError("First argument must be an array");
+            NanReturnUndefined();
         }
 
         v8::Local<v8::Object> message = args[0]->ToObject();
@@ -257,15 +257,14 @@ public:
     static NAN_METHOD(New)
     {
         NanScope();
-
         if (!args.IsConstructCall()) {
-            return NanThrowTypeError("Use the new operator to create instances of this object.");
+            NanThrowTypeError("Use the new operator to create instances of this object.");
+            NanReturnUndefined();
         }
 
         NodeMidiInput* input = new NodeMidiInput();
         input->message_async.data = input;
         input->Wrap(args.This());
-
         NanReturnValue(args.This());
     }
 
@@ -282,7 +281,8 @@ public:
         NanScope();
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (args.Length() == 0 || !args[0]->IsUint32()) {
-            return NanThrowTypeError("First argument must be an integer");
+            NanThrowTypeError("First argument must be an integer");
+            NanReturnUndefined();
         }
 
         unsigned int portNumber = args[0]->Uint32Value();
@@ -296,14 +296,15 @@ public:
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (input->in->isPortOpen()) {
             NanReturnValue(NanNew<v8::Boolean>(false));
-            return;
         }
         if (args.Length() == 0 || !args[0]->IsUint32()) {
-            return NanThrowTypeError("First argument must be an integer");
+            NanThrowTypeError("First argument must be an integer");
+            NanReturnUndefined();
         }
         unsigned int portNumber = args[0]->Uint32Value();
         if (portNumber >= input->in->getPortCount()) {
-            return NanThrowRangeError("Invalid MIDI port number");
+            NanThrowRangeError("Invalid MIDI port number");
+            NanReturnUndefined();
         }
 
         input->Ref();
@@ -319,15 +320,14 @@ public:
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (input->in->isPortOpen()) {
             NanReturnValue(NanNew<v8::Boolean>(false));
-            return;
         }
         if (args.Length() == 0 || !args[0]->IsString()) {
-            return NanThrowTypeError("First argument must be a string");
+            NanThrowTypeError("First argument must be a string");
+            NanReturnUndefined();
         }
 
-        std::string name(*NanAsciiString(args[0]));
-
         input->Ref();
+        std::string name(*NanAsciiString(args[0]));
         input->in->setCallback(&NodeMidiInput::Callback, input);
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->in->openVirtualPort(name);
@@ -340,7 +340,6 @@ public:
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (!input->in->isPortOpen()) {
             NanReturnValue(NanNew<v8::Boolean>(false));
-            return;
         }
 
         input->Unref();
@@ -363,7 +362,8 @@ public:
         NanScope();
         NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
         if (args.Length() != 3 || !args[0]->IsBoolean() || !args[1]->IsBoolean() || !args[2]->IsBoolean()) {
-            return NanThrowTypeError("Arguments must be boolean");
+            NanThrowTypeError("Arguments must be boolean");
+            NanReturnUndefined();
         }
 
         bool filter_sysex = args[0]->BooleanValue();

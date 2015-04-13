@@ -1609,7 +1609,7 @@ void MidiInAlsa :: openVirtualPort( std::string portName )
     snd_seq_port_info_set_midi_channels(pinfo, 16);
 #ifndef AVOID_TIMESTAMPING
     snd_seq_port_info_set_timestamping(pinfo, 1);
-    snd_seq_port_info_set_timestamp_real(pinfo, 1);    
+    snd_seq_port_info_set_timestamp_real(pinfo, 1);
     snd_seq_port_info_set_timestamp_queue(pinfo, data->queue_id);
 #endif
     snd_seq_port_info_set_name(pinfo, portName.c_str());
@@ -1729,6 +1729,7 @@ void MidiOutAlsa :: initialize( const std::string& clientName )
   data->seq = seq;
   data->portNum = -1;
   data->vport = -1;
+  data->subscription = 0;
   data->bufferSize = 32;
   data->coder = 0;
   data->buffer = 0;

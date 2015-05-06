@@ -1,5 +1,9 @@
 # node-midi Changelog
 
+## Version 0.9.3
+
+* Update NAN version for iojs 2.x support. (Ilkka Myller)
+
 ## Version 0.9.2
 
 * More NAN use for broader support (nw.js, iojs). (Andrew Morton)

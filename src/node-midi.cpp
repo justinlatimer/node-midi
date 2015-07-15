@@ -174,6 +174,8 @@ public:
 
         NODE_SET_PROTOTYPE_METHOD(t, "openPort", OpenPort);
         NODE_SET_PROTOTYPE_METHOD(t, "openVirtualPort", OpenVirtualPort);
+
+        NODE_SET_PROTOTYPE_METHOD(t, "cancelCallback", CancelCallback);
         NODE_SET_PROTOTYPE_METHOD(t, "closePort", ClosePort);
 
         NODE_SET_PROTOTYPE_METHOD(t, "ignoreTypes", IgnoreTypes);
@@ -299,6 +301,14 @@ public:
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, node::ObjectWrap::Unwrap<NodeMidiInput>(args.This()));
         input->in->openVirtualPort(name);
+        NanReturnUndefined();
+    }
+
+    static NAN_METHOD(CancelCallback)
+    {
+        NanScope();
+        NodeMidiInput* input = node::ObjectWrap::Unwrap<NodeMidiInput>(args.This());
+        input->in->cancelCallback();
         NanReturnUndefined();
     }
 

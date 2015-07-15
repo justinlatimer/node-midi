@@ -309,6 +309,7 @@ public:
         if (input->in->isPortOpen()) {
             input->Unref();
         }
+        input->in->cancelCallback();
         input->in->closePort();
         uv_close((uv_handle_t*)&input->message_async, NULL);
         NanReturnUndefined();

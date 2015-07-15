@@ -8,5 +8,6 @@ input.on('message', function(deltaTime, message) {
 });
 input.openPort(0);
 setTimeout(function() {
+  input.cancelCallback();
   input.closePort();
 }, 10000);

@@ -59,6 +59,10 @@ input.getPortName(0);
 
 // Configure a callback.
 input.on('message', function(deltaTime, message) {
+  // The message is an array of numbers corresponding to the MIDI bytes:
+  //   [status, data1, data2]
+  // https://www.cs.cf.ac.uk/Dave/Multimedia/node158.html has some helpful
+  // information interpreting the messages.
   console.log('m:' + message + ' d:' + deltaTime);
 });
 
@@ -70,7 +74,7 @@ input.openPort(0);
 // the appropriate type in the function below.
 // Order: (Sysex, Timing, Active Sensing)
 // For example if you want to receive only MIDI Clock beats
-// you should use 
+// you should use
 // input.ignoreTypes(true, false, true)
 input.ignoreTypes(false, false, false);
 

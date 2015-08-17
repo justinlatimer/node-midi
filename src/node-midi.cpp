@@ -1,7 +1,3 @@
-#include <v8.h>
-#include <node.h>
-#include <node_object_wrap.h>
-#include <node_version.h>
 #include <nan.h>
 #include <queue>
 #include <uv.h>

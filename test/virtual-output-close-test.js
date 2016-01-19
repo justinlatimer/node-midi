@@ -17,3 +17,5 @@ console.log('ports: ' + input.getPortCount());
 for (var i = 0; i < input.getPortCount(); ++i) {
   console.log('port [' + i + ']: ' + input.getPortName(i));
 }
+
+output.closePort();

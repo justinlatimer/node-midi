@@ -20,10 +20,12 @@ for (var i = 0; i < output.getPortCount(); ++i) {
     break;
   }
 }
-
+reader.pause()
 output.sendMessage(payload);
+
+setTimeout(function() { reader.resume(); }, 10)
 
 setTimeout(function() {
   assert(called);
   process.exit(0);
-}, 10);
+}, 100);

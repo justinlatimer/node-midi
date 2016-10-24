@@ -31,7 +31,7 @@ midi.createReadStream = function(input) {
 
   stream.resume = function() {
     stream.paused = false;
-    while (stream.queue.length && stream.write(queue.shift())) {}
+    while (stream.queue.length && stream.emit('data', stream.queue.shift())) {}
   };
 
   return stream;

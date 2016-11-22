@@ -1,6 +1,6 @@
 {
   "name": "midi",
-  "version": "v0.9.2",
+  "version": "0.9.5",
   "scripts": {
     "test": "mocha test/unit-tests.js && node test/virtual-loopback-test-automated.js"
   },
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "bindings": "~1.2.1",
-    "nan": "~1.7.0"
+    "nan": "^2.3.3"
   },
   "devDependencies": {
     "mocha": ">= 2.2.4",

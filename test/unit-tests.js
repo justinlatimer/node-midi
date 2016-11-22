@@ -64,11 +64,11 @@ describe('midi.input', function() {
     });
 
     it('should return true if not already open', function() {
-      input.openPort(0).should.be.Boolean.and.eql(true);
+      input.openPort(0).should.be.true();
     });
 
     it('should return false if already open', function() {
-      input.openPort(0).should.be.Boolean.and.eql(false);
+      input.openPort(0).should.be.false();
     });
   });
 
@@ -88,11 +88,11 @@ describe('midi.input', function() {
     });
 
     it('should return true if not already open', function() {
-      input.openVirtualPort("test").should.be.Boolean.and.eql(true);
+      input.openVirtualPort("test").should.be.true();
     });
 
     it('should return false if already open', function() {
-      input.openVirtualPort("test").should.be.Boolean.and.eql(false);
+      input.openVirtualPort("test").should.be.false();
     });
   });
 
@@ -105,20 +105,20 @@ describe('midi.input', function() {
 
     it('should return true if not already closed for openPort()', function() {
       input.openPort(0);
-      input.closePort().should.be.Boolean.and.eql(true);
+      input.closePort().should.be.true();
     });
 
     it('should return false if already closed for openPort()', function() {
-      input.closePort().should.be.Boolean.and.eql(false);
+      input.closePort().should.be.false();
     });
 
     it('should return true if not already closed for openVirtualPort()', function() {
       input.openVirtualPort("test");
-      input.closePort().should.be.Boolean.and.eql(true);
+      input.closePort().should.be.true();
     });
 
     it('should return false if already closed for openVirtualPort()', function() {
-      input.closePort().should.be.Boolean.and.eql(false);
+      input.closePort().should.be.false();
     });
   });
 
@@ -127,22 +127,22 @@ describe('midi.input', function() {
 
     it('should return true if port open for openPort()', function() {
       input.openPort(0);
-      input.isPortOpen().should.be.a.Boolean.and.eql(true);
+      input.isPortOpen().should.be.true();
     });
 
     it('should return false if port closed for openPort()', function() {
       input.closePort();
-      input.isPortOpen().should.be.a.Boolean.and.eql(false);
+      input.isPortOpen().should.be.false();
     });
 
     it('should return true if port open for openVirtualPort()', function() {
       input.openVirtualPort("test");
-      input.isPortOpen().should.be.a.Boolean.and.eql(true);
+      input.isPortOpen().should.true();
     });
 
     it('should return false if port closed for openVirtualPort()', function() {
       input.closePort();
-      input.isPortOpen().should.be.a.Boolean.and.eql(false);
+      input.isPortOpen().should.be.false();
     });
   });
 });
@@ -209,11 +209,11 @@ describe('midi.output', function() {
     });
 
     it('should return true if not already open', function() {
-      output.openPort(0).should.be.Boolean.and.eql(true);
+      output.openPort(0).should.true();
     });
 
     it('should return false if already open', function() {
-      output.openPort(0).should.be.Boolean.and.eql(false);
+      output.openPort(0).should.false();
     });
   });
 
@@ -233,11 +233,11 @@ describe('midi.output', function() {
     });
 
     it('should return true if not already open', function() {
-      output.openVirtualPort("test").should.be.Boolean.and.eql(true);
+      output.openVirtualPort("test").should.be.true();
     });
 
     it('should return false if already open', function() {
-      output.openVirtualPort("test").should.be.Boolean.and.eql(false);
+      output.openVirtualPort("test").should.be.false();
     });
   });
 
@@ -250,20 +250,20 @@ describe('midi.output', function() {
 
     it('should return true if not already closed for openPort()', function() {
       output.openPort(0);
-      output.closePort().should.be.Boolean.and.eql(true);
+      output.closePort().should.be.true();
     });
 
     it('should return false if already closed for openPort()', function() {
-      output.closePort().should.be.Boolean.and.eql(false);
+      output.closePort().should.be.false();
     });
 
     it('should return true if not already closed for openVirtualPort()', function() {
       output.openVirtualPort("test");
-      output.closePort().should.be.Boolean.and.eql(true);
+      output.closePort().should.be.true();
     });
 
     it('should return false if already closed for openVirtualPort()', function() {
-      output.closePort().should.be.Boolean.and.eql(false);
+      output.closePort().should.be.false();
     });
   });
 
@@ -272,22 +272,22 @@ describe('midi.output', function() {
 
     it('should return true if port open for openPort()', function() {
       output.openPort(0);
-      output.isPortOpen().should.be.a.Boolean.and.eql(true);
+      output.isPortOpen().should.be.true();
     });
 
     it('should return false if port closed for openPort()', function() {
       output.closePort();
-      output.isPortOpen().should.be.a.Boolean.and.eql(false);
+      output.isPortOpen().should.be.false();
     });
 
     it('should return true if port open for openVirtualPort()', function() {
       output.openVirtualPort("test");
-      output.isPortOpen().should.be.a.Boolean.and.eql(true);
+      output.isPortOpen().should.be.true();
     });
 
     it('should return false if port closed for openVirtualPort()', function() {
       output.closePort();
-      output.isPortOpen().should.be.a.Boolean.and.eql(false);
+      output.isPortOpen().should.be.false();
     });
   });
 });

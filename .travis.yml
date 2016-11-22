@@ -1,16 +1,37 @@
 language: node_js
 node_js:
+  - "6.2"
+  - "5.1"
+  - "4.2"
   - "0.12"
   - "0.10"
   - "0.8"
   - "iojs"
-  - "iojs-v1.0.4"
-before_install:
- - sudo apt-get install libasound2-dev alsa-utils alsa-oss
+  - "iojs-v2"
+  - "iojs-v1"
+sudo: false
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
+    - libasound2-dev
 notifications:
   email: false
 # Travis has no snd-dummy driver (https://github.com/travis-ci/travis-ci/issues/1754)
-# so our tests won't run. We run `npm install` as the test script so build errors
-# appear as test failures.
-install: true
-script: npm install
+# preventing our tests from running. Instead we disable the default `npm install`
+# installation step and run it as test script so compilation errors will mark the
+# build as failed.
+install:
+  - case ${TRAVIS_NODE_VERSION} in
+        iojs*)
+            echo "Not upgrading npm for iojs."
+            ;;
+        *)
+            npm update -g npm
+            ;;
+    esac
+script:
+  - export CXX=g++-4.8
+  - npm install

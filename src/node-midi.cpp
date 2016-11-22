@@ -21,6 +21,8 @@ public:
         t->SetClassName(Nan::New<v8::String>("NodeMidiOutput").ToLocalChecked());
         t->InstanceTemplate()->SetInternalFieldCount(1);
 
+        Nan::SetPrototypeMethod(t, "release", Release);
+
         Nan::SetPrototypeMethod(t, "getPortCount", GetPortCount);
         Nan::SetPrototypeMethod(t, "getPortName", GetPortName);
 
@@ -41,7 +43,10 @@ public:
 
     ~NodeMidiOutput()
     {
-        delete out;
+        if (out) {
+            delete out;
+            out = nullptr;
+        }
     }
 
     static NAN_METHOD(New)
@@ -56,6 +61,16 @@ public:
         output->Wrap(info.This());
 
         info.GetReturnValue().Set(info.This());
+    }
+
+    static NAN_METHOD(Release)
+    {
+        Nan::HandleScope scope;
+        NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
+        if (output->out) {
+            delete output->out;
+            output->out = nullptr;
+        }
     }
 
     static NAN_METHOD(GetPortCount)
@@ -190,6 +205,8 @@ public:
         t->SetClassName(Nan::New<v8::String>("NodeMidiInput").ToLocalChecked());
         t->InstanceTemplate()->SetInternalFieldCount(1);
 
+        Nan::SetPrototypeMethod(t, "release", Release);
+
         Nan::SetPrototypeMethod(t, "getPortCount", GetPortCount);
         Nan::SetPrototypeMethod(t, "getPortName", GetPortName);
 
@@ -211,8 +228,10 @@ public:
 
     ~NodeMidiInput()
     {
-        in->closePort();
-        delete in;
+        if (in) {
+            delete in;
+            in = nullptr;
+        }
         uv_mutex_destroy(&message_mutex);
     }
 
@@ -264,6 +283,16 @@ public:
         input->Wrap(info.This());
 
         info.GetReturnValue().Set(info.This());
+    }
+
+    static NAN_METHOD(Release)
+    {
+        Nan::HandleScope scope;
+        NodeMidiInput* input = Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This());
+        if (input->in) {
+            delete input->in;
+            input->in = nullptr;
+        }
     }
 
     static NAN_METHOD(GetPortCount)

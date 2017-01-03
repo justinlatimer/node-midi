@@ -45,6 +45,8 @@ From source:
 
 ### Input
 
+The received `message` is an array of numbers corresponding to the midi bytes: `[status, data1, data2]`. Detailed information on the MIDI format can be found [on this page](https://www.cs.cf.ac.uk/Dave/Multimedia/node158.html) for example.
+
 ```js
 var midi = require('midi');
 

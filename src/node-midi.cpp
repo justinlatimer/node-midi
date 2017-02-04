@@ -57,7 +57,7 @@ public:
         if (info.Length() >= 1 && !info[0]->IsString()) {
             return Nan::ThrowTypeError("First argument must be a boolean");
         } else if (info[0]->IsString()) {
-            name = (*v8::String::Utf8Value(info[0].As<v8::String>()));
+            name = *v8::String::Utf8Value(info[0].As<v8::String>());
         }
 
         if (info.Length() == 2 && !info[1]->IsBoolean()) {
@@ -261,7 +261,7 @@ public:
         if (info.Length() >= 1 && !info[0]->IsString()) {
             return Nan::ThrowTypeError("First argument must be a boolean");
         } else if (info[0]->IsString()) {
-            name = (*v8::String::Utf8Value(info[0].As<v8::String>()));
+            name = *v8::String::Utf8Value(info[0].As<v8::String>());
         }
 
         if (info.Length() == 2 && !info[1]->IsBoolean()) {

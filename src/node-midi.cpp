@@ -90,6 +90,7 @@ public:
             return Nan::ThrowRangeError("Invalid MIDI port number");
         }
 
+        output->Ref();
         output->out->openPort(portNumber);
         return;
     }
@@ -104,6 +105,7 @@ public:
 
         std::string name(*v8::String::Utf8Value(info[0].As<v8::String>()));
 
+        output->Ref();
         output->out->openVirtualPort(name);
         return;
     }
@@ -112,6 +114,9 @@ public:
     {
         Nan::HandleScope scope;
         NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
+        if (output->out->isPortOpen()) {
+            output->Unref();
+        }
         output->out->closePort();
         return;
     }

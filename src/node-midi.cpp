@@ -33,9 +33,9 @@ public:
         target->Set(Nan::New<v8::String>("output").ToLocalChecked(), t->GetFunction());
     }
 
-    NodeMidiOutput()
+    NodeMidiOutput(RtMidi::Api api, std::string name)
     {
-        out = new RtMidiOut();
+        out = new RtMidiOut(api, name);
     }
 
     ~NodeMidiOutput()
@@ -51,7 +51,22 @@ public:
             return Nan::ThrowTypeError("Use the new operator to create instances of this object.");
         }
 
-        NodeMidiOutput* output = new NodeMidiOutput();
+        std::string name = std::string("nodeMidi Output");
+        RtMidi::Api api = RtMidi::Api::UNSPECIFIED;
+
+        if (info.Length() >= 1 && !info[0]->IsString()) {
+            return Nan::ThrowTypeError("First argument must be a boolean");
+        } else if (info[0]->IsString()) {
+            name = (*v8::String::Utf8Value(info[0].As<v8::String>()));
+        }
+
+        if (info.Length() == 2 && !info[1]->IsBoolean()) {
+            return Nan::ThrowTypeError("Second argument must be a boolean");
+        } else if (info[1]->IsTrue()) {
+            api = RtMidi::Api::UNIX_JACK;
+        }
+
+        NodeMidiOutput* output = new NodeMidiOutput(api, name);
         output->Wrap(info.This());
 
         info.GetReturnValue().Set(info.This());
@@ -182,9 +197,9 @@ public:
         target->Set(Nan::New<v8::String>("input").ToLocalChecked(), t->GetFunction());
     }
 
-    NodeMidiInput()
+    NodeMidiInput(RtMidi::Api api, std::string name)
     {
-        in = new RtMidiIn();
+        in = new RtMidiIn(api, name);
         uv_mutex_init(&message_mutex);
     }
 
@@ -240,7 +255,22 @@ public:
             return Nan::ThrowTypeError("Use the new operator to create instances of this object.");
         }
 
-        NodeMidiInput* input = new NodeMidiInput();
+        std::string name = std::string("nodeMidi Input");
+        RtMidi::Api api = RtMidi::Api::UNSPECIFIED;
+
+        if (info.Length() >= 1 && !info[0]->IsString()) {
+            return Nan::ThrowTypeError("First argument must be a boolean");
+        } else if (info[0]->IsString()) {
+            name = (*v8::String::Utf8Value(info[0].As<v8::String>()));
+        }
+
+        if (info.Length() == 2 && !info[1]->IsBoolean()) {
+            return Nan::ThrowTypeError("Second argument must be a boolean");
+        } else if (info[1]->IsTrue()) {
+            api = RtMidi::Api::UNIX_JACK;
+        }
+
+        NodeMidiInput* input = new NodeMidiInput(api, name);
         input->message_async.data = input;
         uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->Wrap(info.This());

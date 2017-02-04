@@ -17,6 +17,7 @@ addons:
     packages:
     - g++-4.8
     - libasound2-dev
+    - libjack-jackd2-dev
 notifications:
   email: false
 # Travis has no snd-dummy driver (https://github.com/travis-ci/travis-ci/issues/1754)

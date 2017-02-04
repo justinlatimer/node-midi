@@ -52,7 +52,7 @@ public:
         }
 
         std::string name = std::string("nodeMidi Output");
-        RtMidi::Api api = RtMidi::Api::UNSPECIFIED;
+        RtMidi::Api api = RtMidi::UNSPECIFIED;
 
         if (info.Length() >= 1 && !info[0]->IsString()) {
             return Nan::ThrowTypeError("First argument must be a boolean");
@@ -63,7 +63,7 @@ public:
         if (info.Length() == 2 && !info[1]->IsBoolean()) {
             return Nan::ThrowTypeError("Second argument must be a boolean");
         } else if (info[1]->IsTrue()) {
-            api = RtMidi::Api::UNIX_JACK;
+            api = RtMidi::UNIX_JACK;
         }
 
         NodeMidiOutput* output = new NodeMidiOutput(api, name);
@@ -256,7 +256,7 @@ public:
         }
 
         std::string name = std::string("nodeMidi Input");
-        RtMidi::Api api = RtMidi::Api::UNSPECIFIED;
+        RtMidi::Api api = RtMidi::UNSPECIFIED;
 
         if (info.Length() >= 1 && !info[0]->IsString()) {
             return Nan::ThrowTypeError("First argument must be a boolean");
@@ -267,7 +267,7 @@ public:
         if (info.Length() == 2 && !info[1]->IsBoolean()) {
             return Nan::ThrowTypeError("Second argument must be a boolean");
         } else if (info[1]->IsTrue()) {
-            api = RtMidi::Api::UNIX_JACK;
+            api = RtMidi::UNIX_JACK;
         }
 
         NodeMidiInput* input = new NodeMidiInput(api, name);

@@ -41,7 +41,7 @@ public:
             out = new RtMidiOut();
         }
         catch(RtMidiError &e) {
-            out = nullptr;
+            out = NULL;
         }
     }
 
@@ -238,7 +238,7 @@ public:
             in = new RtMidiIn();
         }
         catch(RtMidiError& e) {
-            in = nullptr;
+            in = NULL;
         }
         configured = false;
         uv_mutex_init(&message_mutex);

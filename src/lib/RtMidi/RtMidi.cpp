@@ -1455,7 +1455,8 @@ std::string MidiInAlsa :: getPortName( unsigned int portNumber )
     int cnum = snd_seq_port_info_get_client( pinfo );
     snd_seq_get_any_client_info( data->seq, cnum, cinfo );
     std::ostringstream os;
-    os << snd_seq_client_info_get_name( cinfo );
+    //os << snd_seq_client_info_get_name( cinfo );
+    os << snd_seq_port_info_get_name ( pinfo );
     os << " ";                                    // These lines added to make sure devices are listed
     os << snd_seq_port_info_get_client( pinfo );  // with full portnames added to ensure individual device names
     os << ":";
@@ -1763,7 +1764,8 @@ std::string MidiOutAlsa :: getPortName( unsigned int portNumber )
     int cnum = snd_seq_port_info_get_client(pinfo);
     snd_seq_get_any_client_info( data->seq, cnum, cinfo );
     std::ostringstream os;
-    os << snd_seq_client_info_get_name(cinfo);
+    //os << snd_seq_client_info_get_name(cinfo);
+    os << snd_seq_port_info_get_name ( pinfo );	  
     os << " ";                                    // These lines added to make sure devices are listed
     os << snd_seq_port_info_get_client( pinfo );  // with full portnames added to ensure individual device names
     os << ":";

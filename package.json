@@ -40,8 +40,8 @@
     "nan": "^2.3.3"
   },
   "devDependencies": {
-    "mocha": ">= 2.1.0",
-    "should": ">= 5.0.1"
+    "mocha": ">= 2.2.4",
+    "should": ">= 5.2.0"
   },
   "repository": {
     "type": "git",

@@ -655,6 +655,12 @@ void MidiInCore :: openPort( unsigned int portNumber, const std::string portName
 
 void MidiInCore :: openVirtualPort( const std::string portName )
 {
+  if ( connected_ ) {
+    errorString_ = "MidiInCore::openVirtualPort: a valid connection already exists!";
+    error( RtMidiError::WARNING, errorString_ );
+    return;
+  }
+
   CoreMidiData *data = static_cast<CoreMidiData *> (apiData_);
 
   // Create a virtual MIDI input destination.
@@ -670,6 +676,8 @@ void MidiInCore :: openVirtualPort( const std::string portName )
 
   // Save our api-specific connection information.
   data->endpoint = endpoint;
+
+  connected_ = true;
 }
 
 void MidiInCore :: closePort( void )
@@ -984,6 +992,12 @@ void MidiOutCore :: closePort( void )
 
 void MidiOutCore :: openVirtualPort( std::string portName )
 {
+  if ( connected_ ) {
+    errorString_ = "MidiOutCore::openVirtualPort: a valid connection already exists!";
+    error( RtMidiError::WARNING, errorString_ );
+    return;
+  }
+
   CoreMidiData *data = static_cast<CoreMidiData *> (apiData_);
 
   if ( data->endpoint ) {
@@ -1005,6 +1019,7 @@ void MidiOutCore :: openVirtualPort( std::string portName )
 
   // Save our api-specific connection information.
   data->endpoint = endpoint;
+  connected_ = true;
 }
 
 void MidiOutCore :: sendMessage( std::vector<unsigned char> *message )
@@ -1440,7 +1455,8 @@ std::string MidiInAlsa :: getPortName( unsigned int portNumber )
     int cnum = snd_seq_port_info_get_client( pinfo );
     snd_seq_get_any_client_info( data->seq, cnum, cinfo );
     std::ostringstream os;
-    os << snd_seq_client_info_get_name( cinfo );
+    //os << snd_seq_client_info_get_name( cinfo );
+    os << snd_seq_port_info_get_name ( pinfo );
     os << " ";                                    // These lines added to make sure devices are listed
     os << snd_seq_port_info_get_client( pinfo );  // with full portnames added to ensure individual device names
     os << ":";
@@ -1565,6 +1581,12 @@ void MidiInAlsa :: openPort( unsigned int portNumber, const std::string portName
 
 void MidiInAlsa :: openVirtualPort( std::string portName )
 {
+  if ( connected_ ) {
+    errorString_ = "MidiInAlsa::openVirtualPort: a valid connection already exists!";
+    error( RtMidiError::WARNING, errorString_ );
+    return;
+  }
+
   AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
   if ( data->vport < 0 ) {
     snd_seq_port_info_t *pinfo;
@@ -1578,7 +1600,7 @@ void MidiInAlsa :: openVirtualPort( std::string portName )
     snd_seq_port_info_set_midi_channels(pinfo, 16);
 #ifndef AVOID_TIMESTAMPING
     snd_seq_port_info_set_timestamping(pinfo, 1);
-    snd_seq_port_info_set_timestamp_real(pinfo, 1);    
+    snd_seq_port_info_set_timestamp_real(pinfo, 1);
     snd_seq_port_info_set_timestamp_queue(pinfo, data->queue_id);
 #endif
     snd_seq_port_info_set_name(pinfo, portName.c_str());
@@ -1623,6 +1645,8 @@ void MidiInAlsa :: openVirtualPort( std::string portName )
       return;
     }
   }
+
+  connected_ = true;
 }
 
 void MidiInAlsa :: closePort( void )
@@ -1696,6 +1720,7 @@ void MidiOutAlsa :: initialize( const std::string& clientName )
   data->seq = seq;
   data->portNum = -1;
   data->vport = -1;
+  data->subscription = 0;
   data->bufferSize = 32;
   data->coder = 0;
   data->buffer = 0;
@@ -1739,7 +1764,8 @@ std::string MidiOutAlsa :: getPortName( unsigned int portNumber )
     int cnum = snd_seq_port_info_get_client(pinfo);
     snd_seq_get_any_client_info( data->seq, cnum, cinfo );
     std::ostringstream os;
-    os << snd_seq_client_info_get_name(cinfo);
+    //os << snd_seq_client_info_get_name(cinfo);
+    os << snd_seq_port_info_get_name ( pinfo );	  
     os << " ";                                    // These lines added to make sure devices are listed
     os << snd_seq_port_info_get_client( pinfo );  // with full portnames added to ensure individual device names
     os << ":";
@@ -1821,16 +1847,26 @@ void MidiOutAlsa :: openPort( unsigned int portNumber, const std::string portNam
 
 void MidiOutAlsa :: closePort( void )
 {
+  AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
+
   if ( connected_ ) {
-    AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
-    snd_seq_unsubscribe_port( data->seq, data->subscription );
-    snd_seq_port_subscribe_free( data->subscription );
+    if ( data->subscription ) {
+      snd_seq_unsubscribe_port( data->seq, data->subscription );
+      snd_seq_port_subscribe_free( data->subscription );
+      data->subscription = 0;
+    }
     connected_ = false;
   }
 }
 
 void MidiOutAlsa :: openVirtualPort( std::string portName )
 {
+  if ( connected_ ) {
+    errorString_ = "MidiOutAlsa::openVirtualPort: a valid connection already exists!";
+    error( RtMidiError::WARNING, errorString_ );
+    return;
+  }
+
   AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
   if ( data->vport < 0 ) {
     data->vport = snd_seq_create_simple_port( data->seq, portName.c_str(),
@@ -1840,8 +1876,11 @@ void MidiOutAlsa :: openVirtualPort( std::string portName )
     if ( data->vport < 0 ) {
       errorString_ = "MidiOutAlsa::openVirtualPort: ALSA error creating virtual port.";
       error( RtMidiError::DRIVER_ERROR, errorString_ );
+      return;
     }
   }
+
+  connected_ = true;
 }
 
 void MidiOutAlsa :: sendMessage( std::vector<unsigned char> *message )

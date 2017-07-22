@@ -33,13 +33,17 @@ Installation uses node-gyp and requires Python 2.7.2 or higher.
 
 From npm:
 
-    $ npm install midi
+```bash
+$ npm install midi
+```
 
 From source:
-
-    $ git clone https://github.com/justinlatimer/node-midi.git
-    $ cd node-midi/
-    $ npm install
+ 
+```bash
+$ git clone https://github.com/justinlatimer/node-midi.git
+$ cd node-midi/
+$ npm install
+```
 
 ## Usage
 

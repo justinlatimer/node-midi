@@ -2,6 +2,8 @@
   "name": "midi",
   "version": "0.9.5",
   "scripts": {
+    "preinstall": "npm install node-pre-gyp",
+    "install": "node-pre-gyp install --fallback-to-build",
     "test": "mocha test/unit-tests.js && node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
@@ -36,8 +38,16 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
+    "node-pre-gyp": "0.6.32",
     "bindings": "~1.2.1",
     "nan": "^2.3.3"
+  },
+  "binary": {
+    "module_name": "midi",
+    "module_path": "./lib/binding/{configuration}/{node_abi}-{platform}-{arch}/",
+    "remote_path": "./{module_name}/v{version}/{configuration}/",
+    "package_name": "{module_name}-v{version}-{node_abi}-{platform}-{arch}.tar.gz",
+    "host": "https://nodeaddons.s3-us-west-2.amazonaws.com"
   },
   "devDependencies": {
     "mocha": ">= 2.1.0",

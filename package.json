@@ -51,7 +51,6 @@
     "remote_path": "{version}"
   },
   "devDependencies": {
-    "aws-sdk": "2.x",
     "mocha": ">= 2.1.0",
     "should": ">= 5.0.1"
   },

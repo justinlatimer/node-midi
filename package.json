@@ -40,8 +40,8 @@
   "dependencies": {
     "bindings": "~1.2.1",
     "nan": "^2.3.3",
-    "node-pre-gyp": "^0.6.32",
-    "node-pre-gyp-git": "^1.4.1"
+    "node-pre-gyp": "^0.6.39",
+    "node-pre-gyp-github": "^1.4.1"
   },
   "binary": {
     "module_name": "midi",
@@ -58,5 +58,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aumhaa/node-midi.git"
-  }
+  },
+  "license": "ISC"
 }

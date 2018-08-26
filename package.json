@@ -45,11 +45,12 @@
   "binary": {
     "module_name": "midi",
     "module_path": "./lib/binding/{configuration}/{node_abi}-{platform}-{arch}/",
-    "remote_path": "./{module_name}/v{version}/{configuration}/",
     "package_name": "{module_name}-v{version}-{node_abi}-{platform}-{arch}.tar.gz",
-    "host": "https://nodeaddons.s3-us-west-2.amazonaws.com"
+    "host": "https://github.com/aumhaa/node-midi/releases/download/",
+    "remote_path": "{version}"
   },
   "devDependencies": {
+    "aws-sdk": "2.x",
     "mocha": ">= 2.1.0",
     "should": ">= 5.0.1"
   },

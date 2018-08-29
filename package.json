@@ -4,7 +4,7 @@
   "scripts": {
     "preinstall": "npm install node-pre-gyp",
     "install": "node-pre-gyp install --fallback-to-build",
-    "test": "mocha test/unit-tests.js && node test/virtual-loopback-test-automated.js"
+    "test": "node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
   "description": "MIDI hardware IO",

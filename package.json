@@ -1,8 +1,10 @@
 {
   "name": "midi",
-  "version": "0.9.5",
+  "version": "0.9.7",
   "scripts": {
-    "test": "mocha test/unit-tests.js && node test/virtual-loopback-test-automated.js"
+    "preinstall": "npm install node-pre-gyp",
+    "install": "node-pre-gyp install --fallback-to-build",
+    "test": "node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
   "description": "MIDI hardware IO",
@@ -37,7 +39,15 @@
   },
   "dependencies": {
     "bindings": "~1.2.1",
-    "nan": "^2.3.3"
+    "nan": "^2.11.0",
+    "node-pre-gyp": "^0.6.39"
+  },
+  "binary": {
+    "module_name": "midi",
+    "module_path": "./lib/binding/{configuration}/{node_abi}-{platform}-{arch}/",
+    "package_name": "{module_name}-v{version}-{node_abi}-{platform}-{arch}.tar.gz",
+    "host": "https://github.com/aumhaa/node-midi/releases/download/",
+    "remote_path": "{version}"
   },
   "devDependencies": {
     "mocha": ">= 2.1.0",
@@ -45,6 +55,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/justinlatimer/node-midi.git"
-  }
+    "url": "https://github.com/aumhaa/node-midi.git"
+  },
+  "license": "ISC"
 }

@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "bindings": "~1.2.1",
-    "nan": "^2.3.3",
+    "nan": "^2.11.0",
     "node-pre-gyp": "^0.6.39"
   },
   "binary": {

@@ -2,7 +2,10 @@
   "name": "midi",
   "version": "0.9.6",
   "scripts": {
-    "test": "mocha test/unit-tests.js && node test/virtual-loopback-test-automated.js"
+    "build": "dotenv sh ./scripts/build.sh",
+    "clean": "rimraf ./build",
+    "install": "node-pre-gyp install --fallback-to-build",
+    "test": "sh ./scripts/test.sh"
   },
   "main": "midi.js",
   "description": "MIDI hardware IO",
@@ -10,6 +13,13 @@
     "name": "Justin Latimer",
     "email": "justinlatimer@gmail.com",
     "url": "http://www.justinlatimer.com/"
+  },
+  "binary": {
+    "module_name": "midi",
+    "module_path": "./lib/{node_abi}-{platform}-{arch}",
+    "host": "https://cycling74-node-prebuilt.s3.amazonaws.com",
+    "remote_path": "./{name}/v{version}/",
+    "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
   },
   "contributors": [
     {
@@ -36,11 +46,14 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "bindings": "~1.2.1",
-    "nan": "^2.3.3"
+    "nan": "^2.3.3",
+    "node-pre-gyp": "^0.12.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.373.0",
+    "dotenv-cli": "^1.4.0",
     "mocha": ">= 2.1.0",
+    "rimraf": "^2.6.2",
     "should": ">= 5.0.1"
   },
   "repository": {

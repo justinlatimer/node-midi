@@ -8,38 +8,44 @@ RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), and Windows
 
 [![Build Status](https://travis-ci.org/justinlatimer/node-midi.svg)](https://travis-ci.org/justinlatimer/node-midi)
 
-## Prerequisites
+## Disclaimer
 
-### OSX
+This is a fork of the `node-midi` package with additional infrastructure changes to integrate it into Cycling '74's worfklow.
+
+## Installation
+
+Installation uses previously built binaries from the [GitHub Releases]() (if available) via node-pre-gyp. If your platform/Node version is not supported please refer to the "Installing from source" requirements and dependencies for building this fork of node-midi.
+
+```
+$ npm install Cycling74/node-midi
+```
+
+### Installing from source
+
+If your are force-installing from source or are running on system without available pre-built binaries you will need required toolchain for your platform:
+
+#### OSX
 
 * Some version of Xcode (or Command Line Tools)
 * Python (for node-gyp)
 
-### Windows
+#### Windows
 
 * Microsoft Visual C++ (the Express edition works fine)
 * Python (for node-gyp)
 
-### Linux
+#### Linux
 
 * A C++ compiler
 * You must have installed and configured ALSA. Without it this module will **NOT** build.
 * Install the libasound2-dev package.
 * Python (for node-gyp)
 
-## Installation
+To force an install from source and skip downloading the pre-built binary from the GitHub releases:
 
-Installation uses node-gyp and requires Python 2.7.2 or higher.
-
-From npm:
-
-    $ npm install midi
-
-From source:
-
-    $ git clone https://github.com/justinlatimer/node-midi.git
-    $ cd node-midi/
-    $ npm install
+```
+npm install Cycling74/node-midi --build-from-source
+```
 
 ## Usage
 

@@ -9,4 +9,4 @@ npm install --build-from-source;
 node-pre-gyp package testpackage;
 node-pre-gyp publish;
 node-pre-gyp info;
-npm run clean;
+npm run clean;rimraf ./build;

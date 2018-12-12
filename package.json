@@ -3,7 +3,6 @@
   "version": "0.9.6",
   "scripts": {
     "build": "dotenv sh ./scripts/build.sh",
-    "clean": "rimraf ./build",
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "sh ./scripts/test.sh"
   },

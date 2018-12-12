@@ -6,7 +6,9 @@ echo "building binaries for publishing";
 npm install --build-from-source;
 # npm test;
 
+node-pre-gyp configure;
+node-pre-gyp build;
 node-pre-gyp package testpackage;
-node-pre-gyp publish;
-node-pre-gyp info;
-npm run clean;rimraf ./build;
+node-pre-gyp-github publish;
+
+rimraf ./build;

@@ -1,5 +1,9 @@
 # node-midi Changelog
 
+## Version 0.9.6
+
+* Added support for pre-built binaries hosted as GitHub Releases using node-pre-gyp
+
 ## Version 0.9.3
 
 * Update NAN version for iojs 2.x support. (Ilkka Myller)

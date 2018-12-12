@@ -17,7 +17,7 @@
     "module_name": "midi",
     "module_path": "./lib/{node_abi}-{platform}-{arch}",
     "host": "https://github.com/Cycling74/node-midi/releases/download/",
-    "remote_path": "v{version}/",
+    "remote_path": "v{version}",
     "package_name": "{name}-{node_abi}-{platform}-{arch}.tar.gz"
   },
   "contributors": [

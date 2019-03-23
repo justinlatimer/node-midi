@@ -48,7 +48,7 @@ midi.createWriteStream = function(output) {
   stream.write = function(d) {
 
     if (Buffer.isBuffer(d)) {
-      d = [d[0], d[1], d[2]];
+      d = Array.prototype.slice.call(d, 0);
     }
 
     output.sendMessage(d);

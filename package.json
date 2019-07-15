@@ -32,6 +32,7 @@
       "name": "Hugo Hromic"
     }
   ],
+  "license": "MIT",
   "engines": {
     "node": ">=0.8.0"
   },

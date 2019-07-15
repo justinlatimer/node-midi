@@ -2,7 +2,7 @@
   "name": "midi",
   "version": "0.9.5",
   "scripts": {
-    "test": "mocha test/unit-tests.js && node test/virtual-loopback-test-automated.js"
+    "test": "mocha test/unit/*.js && node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
   "description": "MIDI hardware IO",
@@ -32,15 +32,16 @@
       "name": "Hugo Hromic"
     }
   ],
+  "license": "MIT",
   "engines": {
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "bindings": "~1.2.1",
+    "bindings": "~1.5.0",
     "nan": "^2.3.3"
   },
   "devDependencies": {
-    "mocha": ">= 2.1.0",
+    "mocha": "^6.1.4",
     "should": ">= 5.0.1"
   },
   "repository": {

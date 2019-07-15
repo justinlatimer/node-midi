@@ -1,5 +1,5 @@
 
-noinst_PROGRAMS = midiprobe midiout qmidiin cmidiin sysextest
+noinst_PROGRAMS = midiprobe midiout qmidiin cmidiin sysextest midiclock_in midiclock_out apinames
 
 AM_CXXFLAGS = -Wall -I$(top_srcdir)
 
@@ -17,3 +17,17 @@ cmidiin_LDADD = $(top_builddir)/librtmidi.la
 
 sysextest_SOURCES = sysextest.cpp
 sysextest_LDADD = $(top_builddir)/librtmidi.la
+
+midiclock_in_SOURCES = midiclock.cpp
+midiclock_in_LDADD = $(top_builddir)/librtmidi.la
+
+midiclock_out_SOURCES = midiclock.cpp
+midiclock_out_LDADD = $(top_builddir)/librtmidi.la
+
+apinames_SOURCES = apinames.cpp
+apinames_LDADD = $(top_builddir)/librtmidi.la
+
+EXTRA_DIST = cmidiin.dsp midiout.dsp midiprobe.dsp qmidiin.dsp	\
+	sysextest.dsp RtMidi.dsw
+
+TESTS = apinames

@@ -1,4 +1,5 @@
 .lock-wscript
 build/
 node_modules/
+.vscode/
 package-lock.json

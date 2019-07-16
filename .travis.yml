@@ -6,7 +6,7 @@ node_js:
   - 12
 matrix:
   allow_failures:
-  - node: 12
+  - node_js: 12
 sudo: false
 addons:
   apt:

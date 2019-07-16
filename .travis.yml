@@ -1,11 +1,12 @@
 language: node_js
 node_js:
-  - "11.9.0"
-  - "10.15.3"
-  - "6.2"
-  - "iojs"
-  - "iojs-v2"
-  - "iojs-v1"
+  - 6
+  - 8
+  - 10
+  - 12
+matrix:
+  allow_failures:
+  - node: 12
 sudo: false
 addons:
   apt:

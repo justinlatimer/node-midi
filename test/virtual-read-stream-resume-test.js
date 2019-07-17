@@ -10,7 +10,7 @@ virtualInput.openVirtualPort("node-midi");
 var reader = midi.createReadStream(virtualInput);
 reader.pipe(process.stdout);
 reader.on('data', function(buffer) {
-  assert.deepEqual(buffer, new Buffer(payload));
+  assert.deepEqual(buffer, new Buffer.from(payload));
   called = true;
 });
 

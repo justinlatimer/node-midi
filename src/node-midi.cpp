@@ -73,7 +73,7 @@ public:
             return Nan::ThrowTypeError("First argument must be an integer");
         }
 
-        unsigned int portNumber = info[0]->Uint32Value();
+        unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
         v8::Local<v8::String> result = Nan::New<v8::String>(output->out->getPortName(portNumber).c_str()).ToLocalChecked();
         info.GetReturnValue().Set(result);
     }
@@ -85,7 +85,7 @@ public:
         if (info.Length() == 0 || !info[0]->IsUint32()) {
             return Nan::ThrowTypeError("First argument must be an integer");
         }
-        unsigned int portNumber = info[0]->Uint32Value();
+        unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
         if (portNumber >= output->out->getPortCount()) {
             return Nan::ThrowRangeError("Invalid MIDI port number");
         }
@@ -102,7 +102,7 @@ public:
             return Nan::ThrowTypeError("First argument must be a string");
         }
 
-        std::string name(*v8::String::Utf8Value(info[0].As<v8::String>()));
+        std::string name(*Nan::Utf8String(info[0]));
 
         output->out->openVirtualPort(name);
         return;
@@ -124,11 +124,11 @@ public:
             return Nan::ThrowTypeError("First argument must be an array");
         }
 
-        v8::Local<v8::Object> message = info[0]->ToObject();
-        int32_t messageLength = message->Get(Nan::New<v8::String>("length").ToLocalChecked())->Int32Value();
+        v8::Local<v8::Object> message = Nan::To<v8::Object>(info[0]).ToLocalChecked();
+        int32_t messageLength = Nan::To<int32_t>(message->Get(Nan::New<v8::String>("length").ToLocalChecked())).FromJust();
         std::vector<unsigned char> messageOutput;
         for (int32_t i = 0; i != messageLength; ++i) {
-            messageOutput.push_back(message->Get(Nan::New<v8::Integer>(i))->Int32Value());
+            messageOutput.push_back(Nan::To<unsigned int>(message->Get(Nan::New<v8::Integer>(i))).FromJust());
         }
         output->out->sendMessage(&messageOutput);
         return;
@@ -208,7 +208,7 @@ public:
                 data->Set(Nan::New<v8::Number>(i), Nan::New<v8::Integer>(message->message[i]));
             }
             info[2] = data;
-            Nan::MakeCallback(input->handle(), emitFunction, 3, info);
+            Nan::Call(emitFunction, input->handle(), 3, info);
             input->message_queue.pop();
             delete message;
         }
@@ -259,7 +259,7 @@ public:
             return Nan::ThrowTypeError("First argument must be an integer");
         }
 
-        unsigned int portNumber = info[0]->Uint32Value();
+        unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
         v8::Local<v8::String> result = Nan::New<v8::String>(input->in->getPortName(portNumber).c_str()).ToLocalChecked();
         info.GetReturnValue().Set(result);
     }
@@ -271,7 +271,7 @@ public:
         if (info.Length() == 0 || !info[0]->IsUint32()) {
             return Nan::ThrowTypeError("First argument must be an integer");
         }
-        unsigned int portNumber = info[0]->Uint32Value();
+        unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
         if (portNumber >= input->in->getPortCount()) {
             return Nan::ThrowRangeError("Invalid MIDI port number");
         }
@@ -290,7 +290,7 @@ public:
             return Nan::ThrowTypeError("First argument must be a string");
         }
 
-        std::string name(*v8::String::Utf8Value(info[0].As<v8::String>()));
+        std::string name(*Nan::Utf8String(info[0]));
 
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This()));
@@ -319,9 +319,9 @@ public:
             return Nan::ThrowTypeError("Arguments must be boolean");
         }
 
-        bool filter_sysex = info[0]->BooleanValue();
-        bool filter_timing = info[1]->BooleanValue();
-        bool filter_sensing = info[2]->BooleanValue();
+        bool filter_sysex = Nan::To<bool>(info[0]).FromJust();
+        bool filter_timing = Nan::To<bool>(info[1]).FromJust();
+        bool filter_sensing = Nan::To<bool>(info[2]).FromJust();
         input->in->ignoreTypes(filter_sysex, filter_timing, filter_sensing);
         return;
     }

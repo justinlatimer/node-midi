@@ -14,7 +14,6 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - g++-4.8
     - libasound2-dev
 notifications:
   email: false
@@ -23,5 +22,4 @@ notifications:
 # installation step and run it as test script so compilation errors will mark the
 # build as failed.
 script:
-  - export CXX=g++-4.8
   - npm install

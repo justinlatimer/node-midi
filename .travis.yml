@@ -4,23 +4,20 @@ node_js:
   - 8
   - 10
   - 12
+os:
+  - linux
+  - osx
+  - windows
 matrix:
-  allow_failures:
-  - node_js: 12
-sudo: false
+  exclude:
+    - node_js: 6
+      os: windows
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - g++-4.8
     - libasound2-dev
 notifications:
   email: false
-# Travis has no snd-dummy driver (https://github.com/travis-ci/travis-ci/issues/1754)
-# preventing our tests from running. Instead we disable the default `npm install`
-# installation step and run it as test script so compilation errors will mark the
-# build as failed.
-script:
-  - export CXX=g++-4.8
-  - npm install
+script: 'true'

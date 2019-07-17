@@ -11,7 +11,7 @@ private:
     RtMidiOut* out;
 public:
     static Nan::Persistent<v8::FunctionTemplate> s_ct;
-    static void Init(v8::Handle<v8::Object> target)
+    static void Init(v8::Local<v8::Object> target)
     {
         Nan::HandleScope scope;
 
@@ -32,7 +32,7 @@ public:
 
         Nan::SetPrototypeMethod(t, "sendMessage", SendMessage);
 
-        target->Set(Nan::New<v8::String>("output").ToLocalChecked(), t->GetFunction());
+        Nan::Set(target, Nan::New<v8::String>("output").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
     }
 
     NodeMidiOutput()
@@ -135,10 +135,10 @@ public:
         }
 
         v8::Local<v8::Object> message = Nan::To<v8::Object>(info[0]).ToLocalChecked();
-        int32_t messageLength = Nan::To<int32_t>(message->Get(Nan::New<v8::String>("length").ToLocalChecked())).FromJust();
+        int32_t messageLength = Nan::To<int32_t>(Nan::Get(message, Nan::New<v8::String>("length").ToLocalChecked()).ToLocalChecked()).FromJust();
         std::vector<unsigned char> messageOutput;
         for (int32_t i = 0; i != messageLength; ++i) {
-            messageOutput.push_back(Nan::To<unsigned int>(message->Get(Nan::New<v8::Integer>(i))).FromJust());
+            messageOutput.push_back(Nan::To<unsigned int>(Nan::Get(message, Nan::New<v8::Integer>(i)).ToLocalChecked()).FromJust());
         }
         output->out->sendMessage(&messageOutput);
         return;
@@ -165,7 +165,7 @@ public:
     std::queue<MidiMessage*> message_queue;
 
     static Nan::Persistent<v8::FunctionTemplate> s_ct;
-    static void Init(v8::Handle<v8::Object> target)
+    static void Init(v8::Local<v8::Object> target)
     {
         Nan::HandleScope scope;
 
@@ -186,7 +186,7 @@ public:
 
         Nan::SetPrototypeMethod(t, "ignoreTypes", IgnoreTypes);
 
-        target->Set(Nan::New<v8::String>("input").ToLocalChecked(), t->GetFunction());
+        Nan::Set(target, Nan::New<v8::String>("input").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
     }
 
     NodeMidiInput()
@@ -207,7 +207,7 @@ public:
         Nan::HandleScope scope;
         NodeMidiInput *input = static_cast<NodeMidiInput*>(async->data);
         uv_mutex_lock(&input->message_mutex);
-        v8::Local<v8::Function> emitFunction = input->handle()->Get(Nan::New<v8::String>(symbol_emit).ToLocalChecked()).As<v8::Function>();
+        v8::Local<v8::Function> emitFunction = Nan::Get(input->handle(), Nan::New<v8::String>(symbol_emit).ToLocalChecked()).ToLocalChecked().As<v8::Function>();
         while (!input->message_queue.empty())
         {
             MidiMessage* message = input->message_queue.front();
@@ -217,7 +217,7 @@ public:
             int32_t count = (int32_t)message->message.size();
             v8::Local<v8::Array> data = Nan::New<v8::Array>(count);
             for (int32_t i = 0; i < count; ++i) {
-                data->Set(Nan::New<v8::Number>(i), Nan::New<v8::Integer>(message->message[i]));
+                Nan::Set(data, Nan::New<v8::Number>(i), Nan::New<v8::Integer>(message->message[i]));
             }
             info[2] = data;
             Nan::Call(emitFunction, input->handle(), 3, info);
@@ -351,7 +351,7 @@ Nan::Persistent<v8::FunctionTemplate> NodeMidiOutput::s_ct;
 Nan::Persistent<v8::FunctionTemplate> NodeMidiInput::s_ct;
 
 extern "C" {
-    void init (v8::Handle<v8::Object> target)
+    void init (v8::Local<v8::Object> target)
     {
         NodeMidiOutput::Init(target);
         NodeMidiInput::Init(target);

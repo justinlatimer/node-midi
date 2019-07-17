@@ -102,7 +102,7 @@ public:
             return Nan::ThrowTypeError("First argument must be a string");
         }
 
-        std::string name(*v8::String::Utf8Value(info[0].As<v8::String>()));
+        std::string name(*Nan::Utf8String(info[0]));
 
         output->out->openVirtualPort(name);
         return;
@@ -290,7 +290,7 @@ public:
             return Nan::ThrowTypeError("First argument must be a string");
         }
 
-        std::string name(*v8::String::Utf8Value(info[0].As<v8::String>()));
+        std::string name(*Nan::Utf8String(info[0]));
 
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This()));

@@ -32,13 +32,11 @@ RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), and Windows
 Installation uses node-gyp and requires Python 2.7.2 or higher.
 
 From npm:
-
 ```bash
 $ npm install midi
 ```
 
 From source:
-
 ```bash
 $ git clone https://github.com/justinlatimer/node-midi.git
 $ cd node-midi/
@@ -50,10 +48,10 @@ $ npm install
 ### Input
 
 ```js
-var midi = require('midi');
+const midi = require('midi');
 
 // Set up a new input.
-var input = new midi.input();
+const input = new midi.input();
 
 // Count the available input ports.
 input.getPortCount();
@@ -62,12 +60,12 @@ input.getPortCount();
 input.getPortName(0);
 
 // Configure a callback.
-input.on('message', function(deltaTime, message) {
+input.on('message', (deltaTime, message) => {
   // The message is an array of numbers corresponding to the MIDI bytes:
   //   [status, data1, data2]
   // https://www.cs.cf.ac.uk/Dave/Multimedia/node158.html has some helpful
   // information interpreting the messages.
-  console.log('m:' + message + ' d:' + deltaTime);
+  console.log(`m: ${message} d: ${deltaTime}`);
 });
 
 // Open the first available input port.
@@ -93,10 +91,10 @@ setTimeout(function() {
 ### Output
 
 ```js
-var midi = require('midi');
+const midi = require('midi');
 
 // Set up a new output.
-var output = new midi.output();
+const output = new midi.output();
 
 // Count the available output ports.
 output.getPortCount();
@@ -122,14 +120,14 @@ connect to. This can be done simply by calling openVirtualPort(portName) instead
 of openPort(portNumber).
 
 ```js
-var midi = require('midi');
+const midi = require('midi');
 
 // Set up a new input.
-var input = new midi.input();
+const input = new midi.input();
 
 // Configure a callback.
-input.on('message', function(deltaTime, message) {
-    console.log('m:' + message + ' d:' + deltaTime);
+input.on('message', (deltaTime, message) => {
+    console.log(`m: ${message} d: ${deltaTime}`);
 });
 
 // Create a virtual input port.
@@ -154,13 +152,13 @@ You can also use this library with streams! Here are the interfaces
 
 ```js
 // create a readable stream
-var stream1 = midi.createReadStream();
+const stream1 = midi.createReadStream();
 
 // createReadStream also accepts an optional `input` param
-var input = new midi.input();
+const input = new midi.input();
 input.openVirtualPort('hello world');
 
-var stream2 = midi.createReadStream(input)
+const stream2 = midi.createReadStream(input)
 
 stream2.pipe(require('fs').createWriteStream('something.bin'));
 ```
@@ -169,13 +167,13 @@ stream2.pipe(require('fs').createWriteStream('something.bin'));
 
 ```js
 // create a writable stream
-var stream1 = midi.createWriteStream();
+const stream1 = midi.createWriteStream();
 
 // createWriteStream also accepts an optional `output` param
-var output = new midi.output();
+const output = new midi.output();
 output.openVirtualPort('hello again');
 
-var stream2 = midi.createWriteStream(output);
+const stream2 = midi.createWriteStream(output);
 
 require('fs').createReadStream('something.bin').pipe(stream2);
 ```

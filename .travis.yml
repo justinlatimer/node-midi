@@ -16,3 +16,4 @@ addons:
     - libasound2-dev
 notifications:
   email: false
+script: 'true'

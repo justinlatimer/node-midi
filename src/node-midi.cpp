@@ -11,7 +11,7 @@ private:
     RtMidiOut* out;
 public:
     static Nan::Persistent<v8::FunctionTemplate> s_ct;
-    static void Init(v8::Handle<v8::Object> target)
+    static void Init(v8::Local<v8::Object> target)
     {
         Nan::HandleScope scope;
 
@@ -28,9 +28,11 @@ public:
         Nan::SetPrototypeMethod(t, "openVirtualPort", OpenVirtualPort);
         Nan::SetPrototypeMethod(t, "closePort", ClosePort);
 
+        Nan::SetPrototypeMethod(t, "isPortOpen", IsPortOpen);
+
         Nan::SetPrototypeMethod(t, "sendMessage", SendMessage);
 
-        target->Set(Nan::New<v8::String>("output").ToLocalChecked(), t->GetFunction());
+        Nan::Set(target, Nan::New<v8::String>("output").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
     }
 
     NodeMidiOutput()
@@ -73,7 +75,7 @@ public:
             return Nan::ThrowTypeError("First argument must be an integer");
         }
 
-        unsigned int portNumber = info[0]->Uint32Value();
+        unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
         v8::Local<v8::String> result = Nan::New<v8::String>(output->out->getPortName(portNumber).c_str()).ToLocalChecked();
         info.GetReturnValue().Set(result);
     }
@@ -85,7 +87,7 @@ public:
         if (info.Length() == 0 || !info[0]->IsUint32()) {
             return Nan::ThrowTypeError("First argument must be an integer");
         }
-        unsigned int portNumber = info[0]->Uint32Value();
+        unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
         if (portNumber >= output->out->getPortCount()) {
             return Nan::ThrowRangeError("Invalid MIDI port number");
         }
@@ -102,7 +104,7 @@ public:
             return Nan::ThrowTypeError("First argument must be a string");
         }
 
-        std::string name(*v8::String::Utf8Value(info[0].As<v8::String>()));
+        std::string name(*Nan::Utf8String(info[0]));
 
         output->out->openVirtualPort(name);
         return;
@@ -116,6 +118,14 @@ public:
         return;
     }
 
+    static NAN_METHOD(IsPortOpen)
+    {
+        Nan::HandleScope scope;
+        NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
+        v8::Local<v8::Boolean> result = Nan::New<v8::Boolean>(output->out->isPortOpen());
+        info.GetReturnValue().Set(result);
+    }
+
     static NAN_METHOD(SendMessage)
     {
         Nan::HandleScope scope;
@@ -124,11 +134,11 @@ public:
             return Nan::ThrowTypeError("First argument must be an array");
         }
 
-        v8::Local<v8::Object> message = info[0]->ToObject();
-        int32_t messageLength = message->Get(Nan::New<v8::String>("length").ToLocalChecked())->Int32Value();
+        v8::Local<v8::Object> message = Nan::To<v8::Object>(info[0]).ToLocalChecked();
+        int32_t messageLength = Nan::To<int32_t>(Nan::Get(message, Nan::New<v8::String>("length").ToLocalChecked()).ToLocalChecked()).FromJust();
         std::vector<unsigned char> messageOutput;
         for (int32_t i = 0; i != messageLength; ++i) {
-            messageOutput.push_back(message->Get(Nan::New<v8::Integer>(i))->Int32Value());
+            messageOutput.push_back(Nan::To<unsigned int>(Nan::Get(message, Nan::New<v8::Integer>(i)).ToLocalChecked()).FromJust());
         }
         output->out->sendMessage(&messageOutput);
         return;
@@ -155,7 +165,7 @@ public:
     std::queue<MidiMessage*> message_queue;
 
     static Nan::Persistent<v8::FunctionTemplate> s_ct;
-    static void Init(v8::Handle<v8::Object> target)
+    static void Init(v8::Local<v8::Object> target)
     {
         Nan::HandleScope scope;
 
@@ -172,9 +182,11 @@ public:
         Nan::SetPrototypeMethod(t, "openVirtualPort", OpenVirtualPort);
         Nan::SetPrototypeMethod(t, "closePort", ClosePort);
 
+        Nan::SetPrototypeMethod(t, "isPortOpen", IsPortOpen);
+
         Nan::SetPrototypeMethod(t, "ignoreTypes", IgnoreTypes);
 
-        target->Set(Nan::New<v8::String>("input").ToLocalChecked(), t->GetFunction());
+        Nan::Set(target, Nan::New<v8::String>("input").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
     }
 
     NodeMidiInput()
@@ -195,7 +207,7 @@ public:
         Nan::HandleScope scope;
         NodeMidiInput *input = static_cast<NodeMidiInput*>(async->data);
         uv_mutex_lock(&input->message_mutex);
-        v8::Local<v8::Function> emitFunction = input->handle()->Get(Nan::New<v8::String>(symbol_emit).ToLocalChecked()).As<v8::Function>();
+        v8::Local<v8::Function> emitFunction = Nan::Get(input->handle(), Nan::New<v8::String>(symbol_emit).ToLocalChecked()).ToLocalChecked().As<v8::Function>();
         while (!input->message_queue.empty())
         {
             MidiMessage* message = input->message_queue.front();
@@ -205,10 +217,10 @@ public:
             int32_t count = (int32_t)message->message.size();
             v8::Local<v8::Array> data = Nan::New<v8::Array>(count);
             for (int32_t i = 0; i < count; ++i) {
-                data->Set(Nan::New<v8::Number>(i), Nan::New<v8::Integer>(message->message[i]));
+                Nan::Set(data, Nan::New<v8::Number>(i), Nan::New<v8::Integer>(message->message[i]));
             }
             info[2] = data;
-            Nan::MakeCallback(input->handle(), emitFunction, 3, info);
+            Nan::Call(emitFunction, input->handle(), 3, info);
             input->message_queue.pop();
             delete message;
         }
@@ -259,7 +271,7 @@ public:
             return Nan::ThrowTypeError("First argument must be an integer");
         }
 
-        unsigned int portNumber = info[0]->Uint32Value();
+        unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
         v8::Local<v8::String> result = Nan::New<v8::String>(input->in->getPortName(portNumber).c_str()).ToLocalChecked();
         info.GetReturnValue().Set(result);
     }
@@ -271,7 +283,7 @@ public:
         if (info.Length() == 0 || !info[0]->IsUint32()) {
             return Nan::ThrowTypeError("First argument must be an integer");
         }
-        unsigned int portNumber = info[0]->Uint32Value();
+        unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
         if (portNumber >= input->in->getPortCount()) {
             return Nan::ThrowRangeError("Invalid MIDI port number");
         }
@@ -290,7 +302,7 @@ public:
             return Nan::ThrowTypeError("First argument must be a string");
         }
 
-        std::string name(*v8::String::Utf8Value(info[0].As<v8::String>()));
+        std::string name(*Nan::Utf8String(info[0]));
 
         input->Ref();
         input->in->setCallback(&NodeMidiInput::Callback, Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This()));
@@ -311,6 +323,14 @@ public:
         return;
     }
 
+    static NAN_METHOD(IsPortOpen)
+    {
+        Nan::HandleScope scope;
+        NodeMidiInput* input = Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This());
+        v8::Local<v8::Boolean> result = Nan::New<v8::Boolean>(input->in->isPortOpen());
+        info.GetReturnValue().Set(result);
+    }
+
     static NAN_METHOD(IgnoreTypes)
     {
         Nan::HandleScope scope;
@@ -319,9 +339,9 @@ public:
             return Nan::ThrowTypeError("Arguments must be boolean");
         }
 
-        bool filter_sysex = info[0]->BooleanValue();
-        bool filter_timing = info[1]->BooleanValue();
-        bool filter_sensing = info[2]->BooleanValue();
+        bool filter_sysex = Nan::To<bool>(info[0]).FromJust();
+        bool filter_timing = Nan::To<bool>(info[1]).FromJust();
+        bool filter_sensing = Nan::To<bool>(info[2]).FromJust();
         input->in->ignoreTypes(filter_sysex, filter_timing, filter_sensing);
         return;
     }
@@ -331,7 +351,7 @@ Nan::Persistent<v8::FunctionTemplate> NodeMidiOutput::s_ct;
 Nan::Persistent<v8::FunctionTemplate> NodeMidiInput::s_ct;
 
 extern "C" {
-    void init (v8::Handle<v8::Object> target)
+    void init (v8::Local<v8::Object> target)
     {
         NodeMidiOutput::Init(target);
         NodeMidiInput::Init(target);

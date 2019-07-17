@@ -1,4 +1,4 @@
-var midi = require('../midi.js');
+var midi = require('../../midi.js');
 var input;
 
 var newInput = function(port) {

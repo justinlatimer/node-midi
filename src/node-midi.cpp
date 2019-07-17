@@ -208,7 +208,7 @@ public:
                 data->Set(Nan::New<v8::Number>(i), Nan::New<v8::Integer>(message->message[i]));
             }
             info[2] = data;
-            Nan::MakeCallback(input->handle(), emitFunction, 3, info);
+            Nan::Call(emitFunction, input->handle(), 3, info);
             input->message_queue.pop();
             delete message;
         }

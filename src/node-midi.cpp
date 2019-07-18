@@ -152,6 +152,7 @@ class NodeMidiInput : public Nan::ObjectWrap
 {
 private:
     RtMidiIn* in;
+    bool configured;
 
 public:
     uv_async_t message_async;
@@ -192,14 +193,26 @@ public:
     NodeMidiInput()
     {
         in = new RtMidiIn();
+        configured = false;
         uv_mutex_init(&message_mutex);
     }
 
     ~NodeMidiInput()
     {
-        in->closePort();
+        cleanUp();
         delete in;
         uv_mutex_destroy(&message_mutex);
+    }
+
+    void cleanUp()
+    {
+        if (this->configured) {
+            this->Unref();
+            this->in->cancelCallback();
+            this->in->closePort();
+            uv_close((uv_handle_t*)&this->message_async, NULL);
+            this->configured = false;
+        }
     }
 
     static NAUV_WORK_CB(EmitMessage)
@@ -249,7 +262,6 @@ public:
 
         NodeMidiInput* input = new NodeMidiInput();
         input->message_async.data = input;
-        uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->Wrap(info.This());
 
         info.GetReturnValue().Set(info.This());
@@ -289,7 +301,9 @@ public:
         }
 
         input->Ref();
+        uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->in->setCallback(&NodeMidiInput::Callback, Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This()));
+        input->configured = true;
         input->in->openPort(portNumber);
         return;
     }
@@ -305,7 +319,9 @@ public:
         std::string name(*Nan::Utf8String(info[0]));
 
         input->Ref();
+        uv_async_init(uv_default_loop(), &input->message_async, NodeMidiInput::EmitMessage);
         input->in->setCallback(&NodeMidiInput::Callback, Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This()));
+        input->configured = true;
         input->in->openVirtualPort(name);
         return;
     }
@@ -314,12 +330,8 @@ public:
     {
         Nan::HandleScope scope;
         NodeMidiInput* input = Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This());
-        if (input->in->isPortOpen()) {
-            input->Unref();
-        }
-        input->in->cancelCallback();
-        input->in->closePort();
-        uv_close((uv_handle_t*)&input->message_async, NULL);
+        input->cleanUp();
+
         return;
     }
 

@@ -1,20 +1,18 @@
 var midi = require('../../midi.js');
-var input;
+var input = new midi.input();
+input.on('message', function(deltaTime, message) {
+  console.log('m:' + message + ' d:' + deltaTime);
+});
 
 var newInput = function(port) {
   if (input) {
     input.closePort();
   }
 
-  console.log('new input', port);
-
-  input = new midi.input();
-
-  input.on('message', function(deltaTime, message) {
-    console.log('m:' + message + ' d:' + deltaTime);
-  });
-
-  input.openPort(port);
+  setTimeout(function() {
+    console.log('new input', port);
+    input.openPort(port);
+  }, 100);
 };
 
 newInput(0);

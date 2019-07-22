@@ -7,7 +7,10 @@
         'src'
       ],
       'sources': [
-        'src/node-midi.cpp'
+        'src/lib/RtMidi/RtMidi.cpp',
+        'src/input.cpp',
+        'src/output.cpp',
+        'src/midi.cpp'
       ],
       'conditions': [
         ['OS=="linux"',

@@ -1,5 +1,33 @@
 # node-midi Changelog
 
+## Version 1.0.0
+
+* Added isPortOpen (nroadley)
+* Improve examples in README (Simon Egersand)
+* Updated examples to es6 (Amila Welihinda)
+* Update mocha (The Repo Nanny)
+* Update rtmidi to 4.0.0 (Tim Susa)
+* Add license to package.json.
+* Use NAN to handle additional differences in modern nodejs versions.
+* Change supported nodejs version to 6, 8, 10, 12.
+* Better handling of Buffer for stream (jhorology)
+* Fixing read stream resume bug (justinjmoses)
+* Fix clean up of inputs.
+* Exception catching to prevent RtMidi errors crashing the node process (Jeremy Bernstein)
+* Split classes into different files.
+* Fix capitalisation on the classes.
+* Add some documentation about MIDI message formats.
+
+## Version 0.9.5
+
+* Updated RtMidi to most recent version (Szymon Kaliski)
+* Updating NAN to the latest version. This allows node 6.2.0 to be used. (Michael Lawrence)
+
+## Version 0.9.4
+
+* Upgrade to nan v2.0 (Julián Duque)
+* Call cancelCallback when closing port (Szymon Kaliski)
+
 ## Version 0.9.3
 
 * Update NAN version for iojs 2.x support. (Ilkka Myller)

@@ -45,6 +45,12 @@ $ npm install
 
 ## Usage
 
+### MIDI Messages
+
+This library deals with MIDI messages as JS Arrays for both input and output. For example, `[144,69,127]` is MIDI message with status code 144 which means "Note on" on "Channel 1".
+
+For list of midi status codes, see http://www.midi.org/techspecs/midimessages.php
+
 ### Input
 
 ```js

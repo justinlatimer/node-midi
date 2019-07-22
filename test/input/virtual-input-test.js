@@ -1,6 +1,6 @@
 var midi = require("../../midi.js");
 
-var input = new midi.input();
+var input = new midi.Input();
 input.on('message', function(deltaTime, message) {
   console.log('m:' + message + ' d:' + deltaTime);
 });

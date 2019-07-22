@@ -1,7 +1,7 @@
 var midi = require("../midi.js");
 
-var output = new midi.output();
-var input = new midi.input();
+var output = new midi.Output();
+var input = new midi.Input();
 
 output.openVirtualPort("node-midi Virtual Output");
 input.on('message', function(deltaTime, message) {

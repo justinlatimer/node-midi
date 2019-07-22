@@ -1,6 +1,6 @@
 var midi = require("../../midi.js");
 
-var input = new midi.input();
+var input = new midi.Input();
 console.log(input.getPortCount());
 console.log(input.getPortName(0));
 input.on('message', function(deltaTime, message) {

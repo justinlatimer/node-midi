@@ -1,6 +1,6 @@
 var midi = require("../midi.js");
-var virtualInput = new midi.input();
-var output = new midi.output();
+var virtualInput = new midi.Input();
+var output = new midi.Output();
 var assert = require('assert');
 var payload = [144, 23, 81];
 var called = false;

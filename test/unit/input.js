@@ -1,11 +1,11 @@
 var should = require('should');
 var EventEmitter = require('events').EventEmitter;
 var Midi = require('../../midi');
-describe('midi.input', function() {
+describe('midi.Input', function() {
 
   var input;
   beforeEach(()=>{
-    input = new Midi.input();;
+    input = new Midi.Input();;
   })
 
   afterEach(()=>{
@@ -14,7 +14,7 @@ describe('midi.input', function() {
 
   it('should raise when not called with new', function() {
     (function() {
-      Midi.input();
+      Midi.Input();
     }).should.throw('Use the new operator to create instances of this object.');
   });
   
@@ -31,7 +31,6 @@ describe('midi.input', function() {
   });
 
   describe('.getPortName', function() {
-
     it('requires an argument', function() {
       (function() {
         input.getPortName();
@@ -51,7 +50,6 @@ describe('midi.input', function() {
 
 
   describe('.openPort', function() {
-
     it('requires an argument', function() {
       (function() {
         input.openPort();
@@ -73,8 +71,6 @@ describe('midi.input', function() {
 
 
   describe('.openVirtualPort', function() {
-
-
     it('requires an argument', function() {
       (function() {
         input.openVirtualPort();
@@ -87,7 +83,5 @@ describe('midi.input', function() {
       }).should.throw('First argument must be a string');
     });
   });
-
-
 
 });

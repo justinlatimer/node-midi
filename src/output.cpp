@@ -24,7 +24,7 @@ void NodeMidiOutput::Init(v8::Local<v8::Object> target)
 
     Nan::SetPrototypeMethod(t, "sendMessage", SendMessage);
 
-    Nan::Set(target, Nan::New<v8::String>("output").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
+    Nan::Set(target, Nan::New<v8::String>("Output").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
 }
 
 NodeMidiOutput::NodeMidiOutput()

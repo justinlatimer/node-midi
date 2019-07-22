@@ -51,7 +51,7 @@ $ npm install
 const midi = require('midi');
 
 // Set up a new input.
-const input = new midi.input();
+const input = new midi.Input();
 
 // Count the available input ports.
 input.getPortCount();
@@ -94,7 +94,7 @@ setTimeout(function() {
 const midi = require('midi');
 
 // Set up a new output.
-const output = new midi.output();
+const output = new midi.Output();
 
 // Count the available output ports.
 output.getPortCount();
@@ -123,7 +123,7 @@ of openPort(portNumber).
 const midi = require('midi');
 
 // Set up a new input.
-const input = new midi.input();
+const input = new midi.Input();
 
 // Configure a callback.
 input.on('message', (deltaTime, message) => {
@@ -155,7 +155,7 @@ You can also use this library with streams! Here are the interfaces
 const stream1 = midi.createReadStream();
 
 // createReadStream also accepts an optional `input` param
-const input = new midi.input();
+const input = new midi.Input();
 input.openVirtualPort('hello world');
 
 const stream2 = midi.createReadStream(input)
@@ -170,7 +170,7 @@ stream2.pipe(require('fs').createWriteStream('something.bin'));
 const stream1 = midi.createWriteStream();
 
 // createWriteStream also accepts an optional `output` param
-const output = new midi.output();
+const output = new midi.Output();
 output.openVirtualPort('hello again');
 
 const stream2 = midi.createWriteStream(output);

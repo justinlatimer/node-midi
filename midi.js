@@ -3,12 +3,16 @@ var Stream = require('stream');
 
 // MIDI input inherits from EventEmitter
 var EventEmitter = require('events').EventEmitter;
-midi.input.prototype.__proto__ = EventEmitter.prototype;
+midi.Input.prototype.__proto__ = EventEmitter.prototype;
+
+// Backwards compatibility.
+midi.input = midi.Input;
+midi.output = midi.Output;
 
 module.exports = midi;
 
 midi.createReadStream = function(input) {
-  input = input || new midi.input();
+  input = input || new midi.Input();
   var stream = new Stream();
   stream.readable = true;
   stream.paused = false;
@@ -39,7 +43,7 @@ midi.createReadStream = function(input) {
 
 
 midi.createWriteStream = function(output) {
-  output = output || new midi.output();
+  output = output || new midi.Output();
   var stream = new Stream();
   stream.writable = true;
   stream.paused = false;

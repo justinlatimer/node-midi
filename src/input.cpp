@@ -29,7 +29,7 @@ void NodeMidiInput::Init(v8::Local<v8::Object> target)
 
     Nan::SetPrototypeMethod(t, "ignoreTypes", IgnoreTypes);
 
-    Nan::Set(target, Nan::New<v8::String>("input").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
+    Nan::Set(target, Nan::New<v8::String>("Input").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
 }
 
 NodeMidiInput::NodeMidiInput()

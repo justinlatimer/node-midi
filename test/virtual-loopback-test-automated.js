@@ -3,8 +3,8 @@ var midi = require("../midi.js");
 var outputName = "node-midi Virtual Output";
 var inputName = "node-midi Virtual Input";
 
-var virtualOutput = new midi.output();
-var virtualInput = new midi.input();
+var virtualOutput = new midi.Output();
+var virtualInput = new midi.Input();
 
 virtualOutput.openVirtualPort(outputName);
 virtualInput.on('message', function(deltaTime, message) {
@@ -18,8 +18,8 @@ virtualInput.on('message', function(deltaTime, message) {
 virtualInput.openVirtualPort(inputName);
 
 setTimeout(function() {
-  var output = new midi.output();
-  var input = new midi.input();
+  var output = new midi.Output();
+  var input = new midi.Input();
 
   input.on('message', function(deltaTime, message) {
     console.log('Input recieved m:' + message + ' d:' + deltaTime);

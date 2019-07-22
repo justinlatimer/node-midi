@@ -2,26 +2,25 @@ var should = require('should');
 var EventEmitter = require('events').EventEmitter;
 var Midi = require('../../midi');
 
-describe('midi.output', function() {
-
+describe('midi.Output', function() {
   var output;
+
   beforeEach(()=>{
-    output = new Midi.output();;
+    output = new Midi.Output();;
   });
 
   afterEach(()=>{
      output.closePort();;
   });
-    
 
   it('should raise when not called with new', function() {
     (function() {
-      Midi.output();
+      Midi.Output();
     }).should.throw('Use the new operator to create instances of this object.');
   });
 
   it('should not be an emitter', function() {
-    var output = new Midi.output();
+    var output = new Midi.Output();
     output.should.not.be.an.instanceOf(EventEmitter);
   });
 
@@ -51,8 +50,6 @@ describe('midi.output', function() {
   });
 
   describe('.openPort', function() {
-    
-
     it('requires an argument', function() {
       (function() {
         output.openPort();
@@ -73,8 +70,6 @@ describe('midi.output', function() {
   });
 
   describe('.openVirtualPort', function() {
-
-
     it('requires an argument', function() {
       (function() {
         output.openVirtualPort();
@@ -89,7 +84,7 @@ describe('midi.output', function() {
   });
 
   describe('.closePort', function() {
-    var output = new Midi.output();
+    var output = new Midi.Output();
 
     it('allows you to close a port that was not opened', function() {
       output.closePort();

@@ -87,7 +87,8 @@ NAUV_WORK_CB(NodeMidiInput::EmitMessage)
             Nan::Set(data, Nan::New<v8::Number>(i), Nan::New<v8::Integer>(message->message[i]));
         }
         info[2] = data;
-        Nan::Call(emitFunction, input->handle(), 3, info);
+        Nan::Callback callback_emit(emitFunction);
+        callback_emit.Call(input->handle(), 3, info);
         input->message_queue.pop();
         delete message;
     }

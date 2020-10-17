@@ -41,7 +41,7 @@
     "nan": "^2.3.3"
   },
   "devDependencies": {
-    "mocha": "^6.1.4",
+    "mocha": "^8.2.0",
     "should": ">= 5.0.1"
   },
   "repository": {

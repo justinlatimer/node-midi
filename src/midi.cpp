@@ -6,11 +6,9 @@
 Nan::Persistent<v8::FunctionTemplate> NodeMidiInput::s_ct;
 Nan::Persistent<v8::FunctionTemplate> NodeMidiOutput::s_ct;
 
-extern "C" {
-    void init (v8::Local<v8::Object> target)
-    {
-        NodeMidiOutput::Init(target);
-        NodeMidiInput::Init(target);
-    }
-    NODE_MODULE(midi, init)
+NAN_MODULE_INIT(InitAll) {
+    NodeMidiOutput::Init(target);
+    NodeMidiInput::Init(target);
 }
+
+NODE_MODULE(midi, InitAll)

@@ -1,5 +1,10 @@
 # node-midi Changelog
 
+## Version 1.0.1
+
+* Update supported node versions.
+* Update dependencies.
+
 ## Version 1.0.0
 
 * Added isPortOpen (nroadley)

@@ -1,17 +1,13 @@
 language: node_js
 node_js:
-  - 6
-  - 8
   - 10
   - 12
+  - 14
+  - 15
 os:
   - linux
   - osx
   - windows
-matrix:
-  exclude:
-    - node_js: 6
-      os: windows
 addons:
   apt:
     sources:

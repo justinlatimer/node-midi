@@ -34,7 +34,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=0.8.0"
+    "node": ">=10"
   },
   "dependencies": {
     "bindings": "~1.5.0",

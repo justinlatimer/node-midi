@@ -1,5 +1,11 @@
 # node-midi Changelog
 
+## Version 1.0.2
+
+* Add a 'send' alias for 'sendMessage'.
+* Use the NAN module init.
+* Ensure promises can be resolved inside on('message') callbacks (Malvineous)
+
 ## Version 1.0.1
 
 * Update supported node versions.

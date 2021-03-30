@@ -90,4 +90,24 @@ describe('midi.Output', function() {
       output.closePort();
     });
   });
+
+  describe('.send', function() {
+    var output = new Midi.Output();
+
+    it('should require an array argument', function() {
+      (function() {
+        output.send();
+      }).should.throw('First argument must be an array');
+    });
+  });
+
+  describe('.sendMessage', function() {
+    var output = new Midi.Output();
+
+    it('should require an array argument', function() {
+      (function() {
+        output.sendMessage();
+      }).should.throw('First argument must be an array');
+    });
+  });
 });

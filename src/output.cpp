@@ -22,7 +22,8 @@ void NodeMidiOutput::Init(v8::Local<v8::Object> target)
     Nan::SetPrototypeMethod(t, "closePort", ClosePort);
     Nan::SetPrototypeMethod(t, "isPortOpen", IsPortOpen);
 
-    Nan::SetPrototypeMethod(t, "sendMessage", SendMessage);
+    Nan::SetPrototypeMethod(t, "sendMessage", Send);
+    Nan::SetPrototypeMethod(t, "send", Send);
 
     Nan::Set(target, Nan::New<v8::String>("Output").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
 }
@@ -152,7 +153,7 @@ NAN_METHOD(NodeMidiOutput::IsPortOpen)
     info.GetReturnValue().Set(result);
 }
 
-NAN_METHOD(NodeMidiOutput::SendMessage)
+NAN_METHOD(NodeMidiOutput::Send)
 {
     Nan::HandleScope scope;
     NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());

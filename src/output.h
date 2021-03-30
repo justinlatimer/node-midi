@@ -26,7 +26,7 @@ public:
     static NAN_METHOD(ClosePort);
     static NAN_METHOD(IsPortOpen);
 
-    static NAN_METHOD(SendMessage);
+    static NAN_METHOD(Send);
 };
 
 #endif // NODE_MIDI_OUTPUT_H

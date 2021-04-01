@@ -40,11 +40,31 @@
 #include "RtMidi.h"
 #include <sstream>
 
-#if defined(__MACOSX_CORE__)
-  #if TARGET_OS_IPHONE
+#if defined(TARGET_OS_IPHONE)
+
     #define AudioGetCurrentHostTime CAHostTimeBase::GetCurrentTime
     #define AudioConvertHostTimeToNanos CAHostTimeBase::ConvertToNanos
-  #endif
+
+    #include <mach/mach_time.h>
+    class CTime2nsFactor
+    {
+    public:
+        CTime2nsFactor()
+        {
+            mach_timebase_info_data_t tinfo;
+            mach_timebase_info(&tinfo);
+            Factor = (double)tinfo.numer / tinfo.denom;
+        }
+        static double Factor;
+    };
+    double CTime2nsFactor::Factor;
+    static CTime2nsFactor InitTime2nsFactor;
+    #undef AudioGetCurrentHostTime
+    #undef AudioConvertHostTimeToNanos
+  #define AudioGetCurrentHostTime (uint64_t) mach_absolute_time
+  #define AudioConvertHostTimeToNanos(t) t *CTime2nsFactor::Factor
+  #define EndianS32_BtoN(n) n
+
 #endif
 
 // Default for Windows is to add an identifier to the port names; this
@@ -57,7 +77,7 @@
 //
 // **************************************************************** //
 
-#if !defined(__LINUX_ALSA__) && !defined(__UNIX_JACK__) && !defined(__MACOSX_CORE__) && !defined(__WINDOWS_MM__)
+#if !defined(__LINUX_ALSA__) && !defined(__UNIX_JACK__) && !defined(__MACOSX_CORE__) && !defined(__WINDOWS_MM__) && !defined(TARGET_IPHONE_OS)
   #define __RTMIDI_DUMMY__
 #endif
 
@@ -718,8 +738,12 @@ MidiOutApi :: ~MidiOutApi( void )
 
 // OS-X CoreMIDI header files.
 #include <CoreMIDI/CoreMIDI.h>
-#include <CoreAudio/HostTime.h>
-#include <CoreServices/CoreServices.h>
+
+// these are not available on iOS. 
+#if (TARGET_OS_IPHONE == 0)
+  #include <CoreAudio/HostTime.h>
+  #include <CoreServices/CoreServices.h>
+#endif
 
 // A structure to hold variables related to the CoreMIDI API
 // implementation.
@@ -2293,7 +2317,7 @@ void MidiOutAlsa :: openVirtualPort( const std::string &portName )
 
 void MidiOutAlsa :: sendMessage( const unsigned char *message, size_t size )
 {
-  int result;
+  long result;
   AlsaMidiData *data = static_cast<AlsaMidiData *> (apiData_);
   unsigned int nBytes = static_cast<unsigned int> (size);
   if ( nBytes > data->bufferSize ) {
@@ -2313,25 +2337,38 @@ void MidiOutAlsa :: sendMessage( const unsigned char *message, size_t size )
     }
   }
 
-  snd_seq_event_t ev;
-  snd_seq_ev_clear( &ev );
-  snd_seq_ev_set_source( &ev, data->vport );
-  snd_seq_ev_set_subs( &ev );
-  snd_seq_ev_set_direct( &ev );
   for ( unsigned int i=0; i<nBytes; ++i ) data->buffer[i] = message[i];
-  result = snd_midi_event_encode( data->coder, data->buffer, (long)nBytes, &ev );
-  if ( result < (int)nBytes ) {
-    errorString_ = "MidiOutAlsa::sendMessage: event parsing error!";
-    error( RtMidiError::WARNING, errorString_ );
-    return;
-  }
 
-  // Send the event.
-  result = snd_seq_event_output( data->seq, &ev );
-  if ( result < 0 ) {
-    errorString_ = "MidiOutAlsa::sendMessage: error sending MIDI message to port.";
-    error( RtMidiError::WARNING, errorString_ );
-    return;
+  unsigned int offset = 0;
+  while (offset < nBytes) {
+    snd_seq_event_t ev;
+    snd_seq_ev_clear( &ev );
+    snd_seq_ev_set_source( &ev, data->vport );
+    snd_seq_ev_set_subs( &ev );
+    snd_seq_ev_set_direct( &ev );
+    result = snd_midi_event_encode( data->coder, data->buffer + offset,
+                                    (long)(nBytes - offset), &ev );
+    if ( result < 0 ) {
+      errorString_ = "MidiOutAlsa::sendMessage: event parsing error!";
+      error( RtMidiError::WARNING, errorString_ );
+      return;
+    }
+
+    if ( ev.type == SND_SEQ_EVENT_NONE ) {
+      errorString_ = "MidiOutAlsa::sendMessage: incomplete message!";
+      error( RtMidiError::WARNING, errorString_ );
+      return;
+    }
+
+    offset += result;
+
+    // Send the event.
+    result = snd_seq_event_output( data->seq, &ev );
+    if ( result < 0 ) {
+      errorString_ = "MidiOutAlsa::sendMessage: error sending MIDI message to port.";
+      error( RtMidiError::WARNING, errorString_ );
+      return;
+    }
   }
   snd_seq_drain_output( data->seq );
 }

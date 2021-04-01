@@ -1,5 +1,9 @@
 # node-midi Changelog
 
+## Version 1.0.3
+
+* Update RtMidi to d2dd50d.
+
 ## Version 1.0.2
 
 * Add a 'send' alias for 'sendMessage'.

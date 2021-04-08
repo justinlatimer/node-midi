@@ -186,7 +186,7 @@ require('fs').createReadStream('something.bin').pipe(stream2);
 
 ## References
 
-  * http://music.mcgill.ca/~gary/rtmidi/
+  * https://www.music.mcgill.ca/~gary/rtmidi/
   * http://syskall.com/how-to-write-your-own-native-nodejs-extension
 
 ## Maintainers

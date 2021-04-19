@@ -2,7 +2,7 @@
 #include <queue>
 #include <uv.h>
 
-#include "lib/RtMidi/RtMidi.h"
+#include "RtMidi.h"
 
 #include "input.h"
 

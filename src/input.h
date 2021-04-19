@@ -5,7 +5,7 @@
 #include <queue>
 #include <uv.h>
 
-#include "lib/RtMidi/RtMidi.h"
+#include "RtMidi.h"
 
 class NodeMidiInput : public Nan::ObjectWrap
 {

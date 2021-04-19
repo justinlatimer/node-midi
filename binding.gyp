@@ -59,7 +59,8 @@
               }
             },
             'defines': [
-              '__WINDOWS_MM__'
+              '__WINDOWS_MM__',
+              'RT_SYSEX_BUFFER_SIZE=2048'
             ],
             'link_settings': {
               'libraries': [

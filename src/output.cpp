@@ -1,6 +1,6 @@
 #include <nan.h>
 
-#include "lib/RtMidi/RtMidi.h"
+#include "RtMidi.h"
 
 #include "output.h"
 

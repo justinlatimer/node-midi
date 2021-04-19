@@ -4,10 +4,11 @@
       'target_name': 'midi',
       'include_dirs': [
         "<!(node -e \"require('nan')\")",
-        'src'
+        'src',
+        'vendor/rtmidi'
       ],
       'sources': [
-        'src/lib/RtMidi/RtMidi.cpp',
+        'vendor/rtmidi/RtMidi.cpp',
         'src/input.cpp',
         'src/output.cpp',
         'src/midi.cpp'

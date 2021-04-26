@@ -47,5 +47,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/justinlatimer/node-midi.git"
-  }
+  },
+  "files": [
+    "midi.js",
+    "binding.gyp",
+    "src/",
+    "test/",
+    "vendor/"
+  ]
 }

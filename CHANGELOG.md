@@ -1,5 +1,11 @@
 # node-midi Changelog
 
+## Version 1.0.4
+
+* Use a git submodule for RtMidi.
+* Use a larger sysex message buffer size on Windows.
+* Fix links in readme (dzoba)
+
 ## Version 1.0.3
 
 * Update RtMidi to d2dd50d.

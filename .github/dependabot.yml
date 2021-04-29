@@ -1,0 +1,25 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "17:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: mocha
+    versions:
+    - 8.2.1
+    - 8.3.0
+    - 8.3.1
+    - 8.3.2
+  - dependency-name: nan
+    versions:
+    - 2.14.2
+  - dependency-name: y18n
+    versions:
+    - 4.0.1
+  - dependency-name: lodash
+    versions:
+    - 4.17.20
+    - 4.17.21

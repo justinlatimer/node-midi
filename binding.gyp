@@ -60,7 +60,8 @@
             },
             'defines': [
               '__WINDOWS_MM__',
-              'RT_SYSEX_BUFFER_SIZE=2048'
+              'RT_SYSEX_BUFFER_SIZE=2048',
+              'RTMIDI_DO_NOT_ENSURE_UNIQUE_PORTNAMES'
             ],
             'link_settings': {
               'libraries': [

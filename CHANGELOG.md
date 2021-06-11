@@ -1,5 +1,13 @@
 # node-midi Changelog
 
+## Version 2.0.0
+
+* Add tests for listing ports.
+* Prevent RtMidi from ensuring unique port names on Windows (Breaking change to behaviour of port names on Windows).
+* RtMidi Changes
+  * Trim whitespace changes from endpoint names (Breaking change to behaviour of port names on macOS).
+  * Refactor CoreMIDI client usage for stability.
+
 ## Version 1.0.4
 
 * Use a git submodule for RtMidi.

@@ -171,7 +171,7 @@ NAN_METHOD(NodeMidiInput::OpenPort)
         input->in->openPort(portNumber);
     }
     catch(RtMidiError& e) {
-        ;
+        return Nan::ThrowError("Error while opening port");
     }
     return;
 }
@@ -197,7 +197,7 @@ NAN_METHOD(NodeMidiInput::OpenVirtualPort)
         input->in->openVirtualPort(name);
     }
     catch(RtMidiError& e) {
-        ;
+        return Nan::ThrowError("Error while opening virtual port");
     }
     return;
 }

@@ -11,4 +11,8 @@ NAN_MODULE_INIT(InitAll) {
     NodeMidiInput::Init(target);
 }
 
+#if NODE_MAJOR_VERSION >= 10
+NODE_MODULE_CONTEXT_AWARE(midi, InitAll)
+#else
 NODE_MODULE(midi, InitAll)
+#endif

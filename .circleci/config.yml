@@ -21,13 +21,15 @@ jobs:
             sudo apt-get update -q
             sudo apt-get install -q -y libasound2-dev
       - checkout
-      - node/install:
-          install-yarn: false
-          install-npm: true
-      - node/install-packages:
-          app-dir: ~/project
-          pkg-manager: npm
-          cache-version: v1
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}-asd
+      - run:
+          name: Install node modules
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
       - run:
           name: run tests
           command: npm test

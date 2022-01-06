@@ -21,6 +21,9 @@ jobs:
             sudo apt-get update -q
             sudo apt-get install -q -y libasound2-dev
       - checkout
+      - run:
+          name: install submodules
+          command: git submodule init && git submodule update
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}-asd
       - run:

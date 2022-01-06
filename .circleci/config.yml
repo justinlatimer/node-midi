@@ -5,18 +5,16 @@ orbs:
   browser-tools: circleci/browser-tools@1.2.1
 
 defaults: &defaults
-  docker:
-    - image: cimg/node:14.18.2-browsers
-  executor:
-      name: node/default
-      tag: '14.18.2'
+  machine:
+      image: ubuntu-2004:202107-02
+      resource_class: medium
 
 jobs:
   node-tests:
     <<: *defaults
     steps:
       - run:
-          name: install package dependencies
+          name: install OS dependencies
           command: |
             sudo apt-get update -q
             sudo apt-get install -q -y libasound2-dev

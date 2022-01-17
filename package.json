@@ -1,5 +1,5 @@
 {
-  "name": "@Focusrite-Novation/midi",
+  "name": "@focusrite-novation/midi",
   "version": "2.0.0",
   "scripts": {
     "test": "mocha test/unit/*.js && node test/virtual-loopback-test-automated.js"

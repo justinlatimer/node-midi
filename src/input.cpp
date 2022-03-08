@@ -122,6 +122,17 @@ NAN_METHOD(NodeMidiInput::New)
     info.GetReturnValue().Set(info.This());
 }
 
+NAN_METHOD(NodeMidiInput::Release)
+{
+    Nan::HandleScope scope;
+    NodeMidiInput* input = Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This());
+
+    if (input->in) {
+        delete input->in;
+        input->in = nullptr;
+    }
+}
+
 NAN_METHOD(NodeMidiInput::GetPortCount)
 {
     Nan::HandleScope scope;

@@ -35,6 +35,7 @@ public:
     static void Callback(double deltaTime, std::vector<unsigned char> *message, void *userData);
 
     static NAN_METHOD(New);
+    static NAN_METHOD(Release);
 
     static NAN_METHOD(GetPortCount);
     static NAN_METHOD(GetPortName);

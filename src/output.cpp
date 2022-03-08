@@ -59,6 +59,18 @@ NAN_METHOD(NodeMidiOutput::New)
     info.GetReturnValue().Set(info.This());
 }
 
+NAN_METHOD(NodeMidiOutput::Release)
+{
+    Nan::HandleScope scope;
+    NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
+
+    if (output->out) {
+        delete output->out;
+        output->out = nullptr;
+    }
+}
+
+
 NAN_METHOD(NodeMidiOutput::GetPortCount)
 {
     Nan::HandleScope scope;

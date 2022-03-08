@@ -17,6 +17,7 @@ public:
     ~NodeMidiOutput();
 
     static NAN_METHOD(New);
+    static NAN_METHOD(Release);
 
     static NAN_METHOD(GetPortCount);
     static NAN_METHOD(GetPortName);

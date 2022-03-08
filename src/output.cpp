@@ -20,6 +20,8 @@ void NodeMidiOutput::Init(v8::Local<v8::Object> target)
     Nan::SetPrototypeMethod(t, "openPort", OpenPort);
     Nan::SetPrototypeMethod(t, "openVirtualPort", OpenVirtualPort);
     Nan::SetPrototypeMethod(t, "closePort", ClosePort);
+    Nan::SetPrototypeMethod(t, "release", Release);
+
     Nan::SetPrototypeMethod(t, "isPortOpen", IsPortOpen);
 
     Nan::SetPrototypeMethod(t, "sendMessage", Send);

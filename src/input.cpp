@@ -25,6 +25,7 @@ void NodeMidiInput::Init(v8::Local<v8::Object> target)
     Nan::SetPrototypeMethod(t, "openPort", OpenPort);
     Nan::SetPrototypeMethod(t, "openVirtualPort", OpenVirtualPort);
     Nan::SetPrototypeMethod(t, "closePort", ClosePort);
+    Nan::SetPrototypeMethod(t, "release", Release);
     Nan::SetPrototypeMethod(t, "isPortOpen", IsPortOpen);
 
     Nan::SetPrototypeMethod(t, "ignoreTypes", IgnoreTypes);
@@ -120,6 +121,17 @@ NAN_METHOD(NodeMidiInput::New)
     input->Wrap(info.This());
 
     info.GetReturnValue().Set(info.This());
+}
+
+NAN_METHOD(NodeMidiInput::Release)
+{
+    Nan::HandleScope scope;
+    NodeMidiInput* input = Nan::ObjectWrap::Unwrap<NodeMidiInput>(info.This());
+
+    if (input->in) {
+        delete input->in;
+        input->in = nullptr;
+    }
 }
 
 NAN_METHOD(NodeMidiInput::GetPortCount)

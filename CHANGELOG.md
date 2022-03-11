@@ -1,4 +1,8 @@
-# node-midi Changelog
+# @novationmusic/node-midi Changelog
+
+## Version 2.1.0
+
+* Add release methods to inputs and outputs - This makes the devices actually disappear
 
 ## Version 2.0.0
 

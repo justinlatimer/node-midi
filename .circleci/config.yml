@@ -7,7 +7,7 @@ orbs:
 defaults: &defaults
   machine:
     image: ubuntu-2004-cuda-11.4:202110-01
-  resource_class: gpu.nvidia.small
+  resource_class: medium
 
 jobs:
   node-tests:

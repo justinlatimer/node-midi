@@ -1,14 +1,15 @@
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 
 #include "input.h"
 #include "output.h"
 
-Nan::Persistent<v8::FunctionTemplate> NodeMidiInput::s_ct;
-Nan::Persistent<v8::FunctionTemplate> NodeMidiOutput::s_ct;
+Napi::FunctionReference NodeMidiInput::s_ct;
+Napi::FunctionReference NodeMidiOutput::s_ct;
 
-NAN_MODULE_INIT(InitAll) {
-    NodeMidiOutput::Init(target);
-    NodeMidiInput::Init(target);
+Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
+    NodeMidiOutput::Init(env, target, module);
+    NodeMidiInput::Init(env, target, module);
 }
 
-NODE_MODULE(midi, InitAll)
+NODE_API_MODULE(midi, InitAll)

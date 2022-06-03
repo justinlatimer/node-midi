@@ -1,32 +1,33 @@
 #ifndef NODE_MIDI_OUTPUT_H
 #define NODE_MIDI_OUTPUT_H
 
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 
 #include "RtMidi.h"
 
-class NodeMidiOutput : public Nan::ObjectWrap
+class NodeMidiOutput : public Napi::ObjectWrap<NodeMidiOutput>
 {
 private:
     RtMidiOut* out;
 public:
-    static Nan::Persistent<v8::FunctionTemplate> s_ct;
-    static void Init(v8::Local<v8::Object> target);
+    static Napi::FunctionReference s_ct;
+    static void Init(Napi::Object target);
 
     NodeMidiOutput();
     ~NodeMidiOutput();
 
-    static NAN_METHOD(New);
+    static Napi::Value New(const Napi::CallbackInfo& info);
 
-    static NAN_METHOD(GetPortCount);
-    static NAN_METHOD(GetPortName);
+    static Napi::Value GetPortCount(const Napi::CallbackInfo& info);
+    static Napi::Value GetPortName(const Napi::CallbackInfo& info);
 
-    static NAN_METHOD(OpenPort);
-    static NAN_METHOD(OpenVirtualPort);
-    static NAN_METHOD(ClosePort);
-    static NAN_METHOD(IsPortOpen);
+    static Napi::Value OpenPort(const Napi::CallbackInfo& info);
+    static Napi::Value OpenVirtualPort(const Napi::CallbackInfo& info);
+    static Napi::Value ClosePort(const Napi::CallbackInfo& info);
+    static Napi::Value IsPortOpen(const Napi::CallbackInfo& info);
 
-    static NAN_METHOD(Send);
+    static Napi::Value Send(const Napi::CallbackInfo& info);
 };
 
 #endif // NODE_MIDI_OUTPUT_H

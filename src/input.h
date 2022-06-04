@@ -22,9 +22,15 @@ private:
     std::unique_ptr<RtMidiIn> handle;
 
     TSFN_t handleMessage;
+    Napi::FunctionReference emitMessage;
+    bool configured = false;
+
+    void setupCallback(const Napi::Env &env);
+    void cleanup();
 
 public:
-    static std::unique_ptr<Napi::FunctionReference> Init(const Napi::Env &env, Napi::Object target);
+    static std::unique_ptr<Napi::FunctionReference>
+    Init(const Napi::Env &env, Napi::Object target);
 
     NodeMidiInput(const Napi::CallbackInfo &info);
     ~NodeMidiInput();

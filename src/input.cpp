@@ -51,27 +51,43 @@ NodeMidiInput::NodeMidiInput(const Napi::CallbackInfo &info) : Napi::ObjectWrap<
         return;
     }
 
-    handleMessage = TSFN_t::New(
-        info.Env(),
-        info[0].As<Napi::Function>(),
-        "Midi Input",
-        0,
-        1,
-        nullptr,
-        [=](const Napi::Env, void *, nullptr_t *ctx)
-        {
-            handle->cancelCallback();
-        });
-
-    handle->setCallback(&NodeMidiInput::Callback, this);
+    emitMessage = Napi::Persistent(info[0].As<Napi::Function>());
 }
 
 NodeMidiInput::~NodeMidiInput()
 {
+    cleanup();
+}
+
+void NodeMidiInput::setupCallback(const Napi::Env &env)
+{
+    if (!configured)
+    {
+        configured = true;
+
+        handleMessage = TSFN_t::New(
+            env,
+            emitMessage.Value(),
+            "Midi Input",
+            0,
+            1);
+
+        handle->setCallback(&NodeMidiInput::Callback, this);
+    }
+}
+
+void NodeMidiInput::cleanup()
+{
     handle->closePort();
 
-    handleMessage.Abort();
-    handleMessage.Release();
+    if (configured)
+    {
+        configured = false;
+
+        handle->cancelCallback();
+        handleMessage.Abort();
+        handleMessage.Release();
+    }
 }
 
 void NodeMidiInput::Callback(double deltaTime, std::vector<unsigned char> *message, void *userData)
@@ -187,6 +203,7 @@ Napi::Value NodeMidiInput::OpenPort(const Napi::CallbackInfo &info)
 
     try
     {
+        setupCallback(env);
         handle->openPort(portNumber);
     }
     catch (RtMidiError &e)
@@ -218,6 +235,7 @@ Napi::Value NodeMidiInput::OpenVirtualPort(const Napi::CallbackInfo &info)
 
     try
     {
+        setupCallback(env);
         handle->openVirtualPort(name);
     }
     catch (RtMidiError &e)
@@ -239,7 +257,7 @@ Napi::Value NodeMidiInput::ClosePort(const Napi::CallbackInfo &info)
         return env.Null();
     }
 
-    handle->closePort();
+    cleanup();
     return env.Null();
 }
 

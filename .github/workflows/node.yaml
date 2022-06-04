@@ -109,7 +109,7 @@ jobs:
             elif command -v apk &> /dev/null
             then
               apk update
-              apk add make g++ gcc alsa-lib-dev
+              apk add python3 make g++ gcc alsa-lib-dev
             fi
 
             cd /work

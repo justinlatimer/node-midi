@@ -2,7 +2,7 @@
   "name": "midi",
   "version": "2.0.0",
   "scripts": {
-    "install": "pkg-prebuilds-verify ./binding-options.js || node-gyp build",
+    "install": "pkg-prebuilds-verify ./binding-options.js || node-gyp rebuild",
     "build": "node-gyp build",
     "rebuild": "node-gyp rebuild",
     "test": "mocha test/unit/*.js && node test/virtual-loopback-test-automated.js"

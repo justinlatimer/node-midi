@@ -2,9 +2,12 @@
   "name": "midi",
   "version": "2.0.0",
   "scripts": {
+    "build": "node-gyp build",
+    "rebuild": "node-gyp rebuild",
     "test": "mocha test/unit/*.js && node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",
+  "types": "midi.d.ts",
   "description": "MIDI hardware IO",
   "author": {
     "name": "Justin Latimer",
@@ -34,7 +37,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=10"
+    "node": ">=14.15"
   },
   "dependencies": {
     "bindings": "~1.5.0",

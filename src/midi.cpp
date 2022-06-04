@@ -1,15 +1,28 @@
 #include <napi.h>
-#include <uv.h>
 
 #include "input.h"
 #include "output.h"
 
-Napi::FunctionReference NodeMidiInput::s_ct;
-Napi::FunctionReference NodeMidiOutput::s_ct;
+struct MidiInstanceData
+{
+    std::unique_ptr<Napi::FunctionReference> output;
+    std::unique_ptr<Napi::FunctionReference> input;
+};
 
-Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
-    NodeMidiOutput::Init(env, target, module);
-    NodeMidiInput::Init(env, target, module);
+Napi::Object InitAll(Napi::Env env, Napi::Object exports)
+{
+    auto outputRef = NodeMidiOutput::Init(env, exports);
+    auto inputRef = NodeMidiInput::Init(env, exports);
+
+    // Store the constructor as the add-on instance data. This will allow this
+    // add-on to support multiple instances of itself running on multiple worker
+    // threads, as well as multiple instances of itself running in different
+    // contexts on the same thread.
+    env.SetInstanceData<MidiInstanceData>(new MidiInstanceData{
+        std::move(outputRef),
+        std::move(inputRef)});
+
+    return exports;
 }
 
 NODE_API_MODULE(midi, InitAll)

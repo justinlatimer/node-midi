@@ -2,50 +2,44 @@
 #define NODE_MIDI_INPUT_H
 
 #include <napi.h>
-#include <uv.h>
 #include <queue>
-#include <uv.h>
 
 #include "RtMidi.h"
 
 class NodeMidiInput : public Napi::ObjectWrap<NodeMidiInput>
 {
 private:
-    RtMidiIn* in;
-    bool configured;
-
-public:
-    uv_async_t message_async;
-    uv_mutex_t message_mutex;
-
     struct MidiMessage
     {
         double deltaTime;
-        std::vector<unsigned char> message;
+        unsigned char *message;
+        size_t messageLength;
     };
-    std::queue<MidiMessage*> message_queue;
 
-    static Napi::FunctionReference s_ct;
-    static void Init(Napi::Object target);
+    static void CallbackJs(Napi::Env env, Napi::Function callback, nullptr_t *context, MidiMessage *data);
+    using TSFN_t = Napi::TypedThreadSafeFunction<nullptr_t, MidiMessage, CallbackJs>;
 
-    NodeMidiInput();
+    std::unique_ptr<RtMidiIn> handle;
+
+    TSFN_t handleMessage;
+
+public:
+    static std::unique_ptr<Napi::FunctionReference> Init(const Napi::Env &env, Napi::Object target);
+
+    NodeMidiInput(const Napi::CallbackInfo &info);
     ~NodeMidiInput();
-    void cleanUp();
 
-    static NAUV_WORK_CB(EmitMessage);
     static void Callback(double deltaTime, std::vector<unsigned char> *message, void *userData);
 
-    static Napi::Value New(const Napi::CallbackInfo& info);
+    Napi::Value GetPortCount(const Napi::CallbackInfo &info);
+    Napi::Value GetPortName(const Napi::CallbackInfo &info);
 
-    static Napi::Value GetPortCount(const Napi::CallbackInfo& info);
-    static Napi::Value GetPortName(const Napi::CallbackInfo& info);
+    Napi::Value OpenPort(const Napi::CallbackInfo &info);
+    Napi::Value OpenVirtualPort(const Napi::CallbackInfo &info);
+    Napi::Value ClosePort(const Napi::CallbackInfo &info);
+    Napi::Value IsPortOpen(const Napi::CallbackInfo &info);
 
-    static Napi::Value OpenPort(const Napi::CallbackInfo& info);
-    static Napi::Value OpenVirtualPort(const Napi::CallbackInfo& info);
-    static Napi::Value ClosePort(const Napi::CallbackInfo& info);
-    static Napi::Value IsPortOpen(const Napi::CallbackInfo& info);
-
-    static Napi::Value IgnoreTypes(const Napi::CallbackInfo& info);
+    Napi::Value IgnoreTypes(const Napi::CallbackInfo &info);
 };
 
 #endif // NODE_MIDI_INPUT_H

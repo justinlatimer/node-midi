@@ -2,6 +2,7 @@
   "name": "midi",
   "version": "2.0.0",
   "scripts": {
+    "install": "pkg-prebuilds-verify ./binding-options.js || node-gyp build",
     "build": "node-gyp build",
     "rebuild": "node-gyp rebuild",
     "test": "mocha test/unit/*.js && node test/virtual-loopback-test-automated.js"
@@ -39,9 +40,14 @@
   "engines": {
     "node": ">=14.15"
   },
+  "binary": {
+    "napi_versions": [
+      7
+    ]
+  },
   "dependencies": {
-    "bindings": "~1.5.0",
-    "node-addon-api": "^5.0.0"
+    "node-addon-api": "^5.0.0",
+    "pkg-prebuilds": "^0.0.2"
   },
   "devDependencies": {
     "mocha": "^9.0.0",

@@ -1,4 +1,7 @@
-const midi = require('bindings')('midi');
+const midi = require("pkg-prebuilds/bindings")(
+  __dirname,
+  require("./binding-options")
+);
 const Stream = require('stream');
 
 // MIDI input inherits from EventEmitter
@@ -145,5 +148,4 @@ module.exports = {
   // Backwards compatibility.
   input: Input,
   output: Output,
-
 };

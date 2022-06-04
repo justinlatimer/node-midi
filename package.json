@@ -4,7 +4,7 @@
   "scripts": {
     "install": "pkg-prebuilds-verify ./binding-options.js || node-gyp rebuild",
     "build": "node-gyp build",
-    "rebuild": "node-gyp rebuild",
+    "rebuild": "node-gyp clean configure build",
     "test": "mocha test/unit/*.js && node test/virtual-loopback-test-automated.js"
   },
   "main": "midi.js",

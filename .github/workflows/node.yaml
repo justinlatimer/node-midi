@@ -64,6 +64,12 @@ jobs:
           git submodule sync --recursive
           git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
 
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev
+
       - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
@@ -99,11 +105,11 @@ jobs:
             if command -v apt-get &> /dev/null
             then
               apt-get update
-              # apt-get install -y cmake
+              apt-get install -y libasound2-dev
             elif command -v apk &> /dev/null
             then
               apk update
-              apk add make g++ gcc
+              apk add make g++ gcc alsa-lib-dev
             fi
 
             cd /work

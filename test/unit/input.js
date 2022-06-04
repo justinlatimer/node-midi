@@ -15,7 +15,7 @@ describe('midi.Input', function() {
   it('should raise when not called with new', function() {
     (function() {
       Midi.Input();
-    }).should.throw('Use the new operator to create instances of this object.');
+    }).should.throw("Class constructor Input cannot be invoked without 'new'");
   });
   
   it('should be an emitter', function() {

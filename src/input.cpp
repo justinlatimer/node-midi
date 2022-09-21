@@ -109,7 +109,7 @@ void deleteArray(const Napi::Env &env, unsigned char *ptr)
     delete[] ptr;
 }
 
-void NodeMidiInput::CallbackJs(Napi::Env env, Napi::Function callback, nullptr_t *context, MidiMessage *data)
+void NodeMidiInput::CallbackJs(Napi::Env env, Napi::Function callback, void *context, MidiMessage *data)
 {
     if (env != nullptr)
     {

@@ -1,3 +1,3 @@
 [submodule "vendor/rtmidi"]
 	path = vendor/rtmidi
-	url = https://github.com/justinlatimer/rtmidi.git
+	url = https://github.com/thestk/rtmidi.git

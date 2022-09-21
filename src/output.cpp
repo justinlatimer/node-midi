@@ -1,180 +1,218 @@
-#include <nan.h>
+#include <napi.h>
 
 #include "RtMidi.h"
 
 #include "output.h"
 
-void NodeMidiOutput::Init(v8::Local<v8::Object> target)
+std::unique_ptr<Napi::FunctionReference> NodeMidiOutput::Init(const Napi::Env &env, Napi::Object exports)
 {
-    Nan::HandleScope scope;
+    Napi::HandleScope scope(env);
 
-    v8::Local<v8::FunctionTemplate> t = Nan::New<v8::FunctionTemplate>(NodeMidiOutput::New);
+    Napi::Function func = DefineClass(env, "NodeMidiOutput", {
+                                                                 InstanceMethod<&NodeMidiOutput::GetPortCount>("getPortCount", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+                                                                 InstanceMethod<&NodeMidiOutput::GetPortName>("getPortName", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
 
-    s_ct.Reset(t);
-    t->SetClassName(Nan::New<v8::String>("NodeMidiOutput").ToLocalChecked());
-    t->InstanceTemplate()->SetInternalFieldCount(1);
+                                                                 InstanceMethod<&NodeMidiOutput::OpenPort>("openPort", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+                                                                 InstanceMethod<&NodeMidiOutput::OpenVirtualPort>("openVirtualPort", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+                                                                 InstanceMethod<&NodeMidiOutput::ClosePort>("closePort", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+                                                                 InstanceMethod<&NodeMidiOutput::IsPortOpen>("isPortOpen", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
 
-    Nan::SetPrototypeMethod(t, "getPortCount", GetPortCount);
-    Nan::SetPrototypeMethod(t, "getPortName", GetPortName);
+                                                                 InstanceMethod<&NodeMidiOutput::Send>("sendMessage", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+                                                                 InstanceMethod<&NodeMidiOutput::Send>("send", static_cast<napi_property_attributes>(napi_writable | napi_configurable)),
+                                                             });
 
-    Nan::SetPrototypeMethod(t, "openPort", OpenPort);
-    Nan::SetPrototypeMethod(t, "openVirtualPort", OpenVirtualPort);
-    Nan::SetPrototypeMethod(t, "closePort", ClosePort);
-    Nan::SetPrototypeMethod(t, "isPortOpen", IsPortOpen);
+    // Create a persistent reference to the class constructor
+    std::unique_ptr<Napi::FunctionReference> constructor = std::make_unique<Napi::FunctionReference>();
+    *constructor = Napi::Persistent(func);
+    exports.Set("Output", func);
 
-    Nan::SetPrototypeMethod(t, "sendMessage", Send);
-    Nan::SetPrototypeMethod(t, "send", Send);
-
-    Nan::Set(target, Nan::New<v8::String>("Output").ToLocalChecked(), Nan::GetFunction(t).ToLocalChecked());
+    return constructor;
 }
 
-NodeMidiOutput::NodeMidiOutput()
+NodeMidiOutput::NodeMidiOutput(const Napi::CallbackInfo &info) : Napi::ObjectWrap<NodeMidiOutput>(info)
 {
-    try {
-        out = new RtMidiOut();
+    try
+    {
+        handle.reset(new RtMidiOut());
     }
-    catch(RtMidiError &e) {
-        out = NULL;
+    catch (RtMidiError &e)
+    {
+        handle.reset();
+        Napi::Error::New(info.Env(), "Failed to initialise RtMidi").ThrowAsJavaScriptException();
     }
 }
 
 NodeMidiOutput::~NodeMidiOutput()
 {
-    if (out) {
-        delete out;
+    handle->closePort();
+}
+
+Napi::Value NodeMidiOutput::GetPortCount(const Napi::CallbackInfo &info)
+{
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    if (!handle)
+    {
+        Napi::Error::New(env, "RtMidi not initialised").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    return Napi::Number::New(env, handle->getPortCount());
+}
+
+Napi::Value NodeMidiOutput::GetPortName(const Napi::CallbackInfo &info)
+{
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    if (!handle)
+    {
+        Napi::Error::New(env, "RtMidi not initialised").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    if (info.Length() == 0 || !info[0].IsNumber())
+    {
+        Napi::TypeError::New(env, "First argument must be an integer").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    unsigned int portNumber = info[0].ToNumber();
+    try
+    {
+        return Napi::String::New(env, handle->getPortName(portNumber));
+    }
+    catch (RtMidiError &e)
+    {
+        Napi::TypeError::New(env, "Internal RtMidi error").ThrowAsJavaScriptException();
+        return env.Null();
     }
 }
 
-NAN_METHOD(NodeMidiOutput::New)
+Napi::Value NodeMidiOutput::OpenPort(const Napi::CallbackInfo &info)
 {
-    Nan::HandleScope scope;
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
 
-    if (!info.IsConstructCall()) {
-        return Nan::ThrowTypeError("Use the new operator to create instances of this object.");
+    if (!handle)
+    {
+        Napi::Error::New(env, "RtMidi not initialised").ThrowAsJavaScriptException();
+        return env.Null();
     }
 
-    NodeMidiOutput* output = new NodeMidiOutput();
-    output->Wrap(info.This());
+    if (info.Length() == 0 || !info[0].IsNumber())
+    {
+        Napi::TypeError::New(env, "First argument must be an integer").ThrowAsJavaScriptException();
+        return env.Null();
+    }
 
-    info.GetReturnValue().Set(info.This());
+    unsigned int portNumber = info[0].ToNumber();
+    if (portNumber >= handle->getPortCount())
+    {
+        Napi::RangeError::New(env, "Invalid MIDI port number").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    try
+    {
+        handle->openPort(portNumber);
+    }
+    catch (RtMidiError &e)
+    {
+        Napi::Error::New(env, "Internal RtMidi error").ThrowAsJavaScriptException();
+    }
+
+    return env.Null();
 }
 
-NAN_METHOD(NodeMidiOutput::GetPortCount)
+Napi::Value NodeMidiOutput::OpenVirtualPort(const Napi::CallbackInfo &info)
 {
-    Nan::HandleScope scope;
-    NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
-    v8::Local<v8::Integer> result = Nan::New<v8::Uint32>(output-> out ? output->out->getPortCount() : 0);
-    info.GetReturnValue().Set(result);
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    if (!handle)
+    {
+        Napi::Error::New(env, "RtMidi not initialised").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    if (info.Length() == 0 || !info[0].IsString())
+    {
+        Napi::TypeError::New(env, "First argument must be a string").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    std::string name = info[0].ToString();
+
+    try
+    {
+        handle->openVirtualPort(name);
+    }
+    catch (RtMidiError &e)
+    {
+        Napi::Error::New(env, "Internal RtMidi error").ThrowAsJavaScriptException();
+    }
+
+    return env.Null();
 }
 
-NAN_METHOD(NodeMidiOutput::GetPortName)
+Napi::Value NodeMidiOutput::ClosePort(const Napi::CallbackInfo &info)
 {
-    Nan::HandleScope scope;
-    NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
-    if (info.Length() == 0 || !info[0]->IsUint32()) {
-        return Nan::ThrowTypeError("First argument must be an integer");
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+
+    if (!handle)
+    {
+        Napi::Error::New(env, "RtMidi not initialised").ThrowAsJavaScriptException();
+        return env.Null();
     }
 
-    unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
-    try {
-        v8::Local<v8::String> result = Nan::New<v8::String>(output->out ? output->out->getPortName(portNumber).c_str() : "").ToLocalChecked();
-        info.GetReturnValue().Set(result);
-    }
-    catch(RtMidiError& e) {
-        info.GetReturnValue().Set(Nan::New<v8::String>("").ToLocalChecked());
-    }
+    handle->closePort();
+    return env.Null();
 }
 
-NAN_METHOD(NodeMidiOutput::OpenPort)
+Napi::Value NodeMidiOutput::IsPortOpen(const Napi::CallbackInfo &info)
 {
-    Nan::HandleScope scope;
-    NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
 
-    if (!output->out) return;
-
-    if (info.Length() == 0 || !info[0]->IsUint32()) {
-        return Nan::ThrowTypeError("First argument must be an integer");
-    }
-    unsigned int portNumber = Nan::To<unsigned int>(info[0]).FromJust();
-    if (portNumber >= output->out->getPortCount()) {
-        return Nan::ThrowRangeError("Invalid MIDI port number");
+    if (!handle)
+    {
+        Napi::Error::New(env, "RtMidi not initialised").ThrowAsJavaScriptException();
+        return env.Null();
     }
 
-    try {
-        output->out->openPort(portNumber);
-    }
-    catch(RtMidiError& e) {
-        ;
-    }
-    return;
+    return Napi::Boolean::New(env, handle->isPortOpen());
 }
 
-NAN_METHOD(NodeMidiOutput::OpenVirtualPort)
+Napi::Value NodeMidiOutput::Send(const Napi::CallbackInfo &info)
 {
-    Nan::HandleScope scope;
-    NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
 
-    if (!output->out) return;
-
-    if (info.Length() == 0 || !info[0]->IsString()) {
-        return Nan::ThrowTypeError("First argument must be a string");
+    if (!handle)
+    {
+        Napi::Error::New(env, "RtMidi not initialised").ThrowAsJavaScriptException();
+        return env.Null();
     }
 
-    std::string name(*Nan::Utf8String(info[0]));
-
-    try {
-        output->out->openVirtualPort(name);
-    }
-    catch(RtMidiError& e) {
-        ;
-    }
-    return;
-}
-
-NAN_METHOD(NodeMidiOutput::ClosePort)
-{
-    Nan::HandleScope scope;
-    NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
-
-    if (!output->out) return;
-
-    output->out->closePort();
-    return;
-}
-
-NAN_METHOD(NodeMidiOutput::IsPortOpen)
-{
-    Nan::HandleScope scope;
-    NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
-
-    if (!output->out) return;
-
-    v8::Local<v8::Boolean> result = Nan::New<v8::Boolean>(output->out->isPortOpen());
-    info.GetReturnValue().Set(result);
-}
-
-NAN_METHOD(NodeMidiOutput::Send)
-{
-    Nan::HandleScope scope;
-    NodeMidiOutput* output = Nan::ObjectWrap::Unwrap<NodeMidiOutput>(info.This());
-
-    if (!output->out) return;
-
-    if (info.Length() == 0 || !info[0]->IsArray()) {
-        return Nan::ThrowTypeError("First argument must be an array");
+    if (info.Length() == 0 || !info[0].IsBuffer())
+    {
+        Napi::TypeError::New(env, "First argument must be a buffer").ThrowAsJavaScriptException();
+        return env.Null();
     }
 
-    v8::Local<v8::Object> message = Nan::To<v8::Object>(info[0]).ToLocalChecked();
-    int32_t messageLength = Nan::To<int32_t>(Nan::Get(message, Nan::New<v8::String>("length").ToLocalChecked()).ToLocalChecked()).FromJust();
-    std::vector<unsigned char> messageOutput;
-    for (int32_t i = 0; i != messageLength; ++i) {
-        messageOutput.push_back(Nan::To<unsigned int>(Nan::Get(message, Nan::New<v8::Integer>(i)).ToLocalChecked()).FromJust());
+    Napi::Buffer<unsigned char> buffer = info[0].As<Napi::Buffer<unsigned char>>();
+
+    try
+    {
+        handle->sendMessage(buffer.Data(), buffer.Length());
     }
-    try {
-        output->out->sendMessage(&messageOutput);
+    catch (RtMidiError &e)
+    {
+        Napi::Error::New(env, "Internal RtMidi error").ThrowAsJavaScriptException();
     }
-    catch(RtMidiError& e) {
-        ;
-    }
-    return;
+
+    return env.Null();
 }

@@ -16,7 +16,7 @@ describe('midi.Output', function() {
   it('should raise when not called with new', function() {
     (function() {
       Midi.Output();
-    }).should.throw('Use the new operator to create instances of this object.');
+    }).should.throw("Class constructor Output cannot be invoked without 'new'");
   });
 
   it('should not be an emitter', function() {
@@ -97,7 +97,7 @@ describe('midi.Output', function() {
     it('should require an array argument', function() {
       (function() {
         output.send();
-      }).should.throw('First argument must be an array');
+      }).should.throw('First argument must be an array or Buffer');
     });
   });
 
@@ -107,7 +107,7 @@ describe('midi.Output', function() {
     it('should require an array argument', function() {
       (function() {
         output.sendMessage();
-      }).should.throw('First argument must be an array');
+      }).should.throw('First argument must be an array or Buffer');
     });
   });
 });

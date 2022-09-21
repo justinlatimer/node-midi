@@ -1,50 +1,51 @@
 #ifndef NODE_MIDI_INPUT_H
 #define NODE_MIDI_INPUT_H
 
-#include <nan.h>
+#include <napi.h>
 #include <queue>
-#include <uv.h>
 
 #include "RtMidi.h"
 
-class NodeMidiInput : public Nan::ObjectWrap
+class NodeMidiInput : public Napi::ObjectWrap<NodeMidiInput>
 {
 private:
-    RtMidiIn* in;
-    bool configured;
-
-public:
-    uv_async_t message_async;
-    uv_mutex_t message_mutex;
-
     struct MidiMessage
     {
         double deltaTime;
-        std::vector<unsigned char> message;
+        unsigned char *message;
+        size_t messageLength;
     };
-    std::queue<MidiMessage*> message_queue;
 
-    static Nan::Persistent<v8::FunctionTemplate> s_ct;
-    static void Init(v8::Local<v8::Object> target);
+    static void CallbackJs(Napi::Env env, Napi::Function callback, void *context, MidiMessage *data);
+    using TSFN_t = Napi::TypedThreadSafeFunction<void, MidiMessage, CallbackJs>;
 
-    NodeMidiInput();
+    std::unique_ptr<RtMidiIn> handle;
+
+    TSFN_t handleMessage;
+    Napi::FunctionReference emitMessage;
+    bool configured = false;
+
+    void setupCallback(const Napi::Env &env);
+    void cleanup();
+
+public:
+    static std::unique_ptr<Napi::FunctionReference>
+    Init(const Napi::Env &env, Napi::Object target);
+
+    NodeMidiInput(const Napi::CallbackInfo &info);
     ~NodeMidiInput();
-    void cleanUp();
 
-    static NAUV_WORK_CB(EmitMessage);
     static void Callback(double deltaTime, std::vector<unsigned char> *message, void *userData);
 
-    static NAN_METHOD(New);
+    Napi::Value GetPortCount(const Napi::CallbackInfo &info);
+    Napi::Value GetPortName(const Napi::CallbackInfo &info);
 
-    static NAN_METHOD(GetPortCount);
-    static NAN_METHOD(GetPortName);
+    Napi::Value OpenPort(const Napi::CallbackInfo &info);
+    Napi::Value OpenVirtualPort(const Napi::CallbackInfo &info);
+    Napi::Value ClosePort(const Napi::CallbackInfo &info);
+    Napi::Value IsPortOpen(const Napi::CallbackInfo &info);
 
-    static NAN_METHOD(OpenPort);
-    static NAN_METHOD(OpenVirtualPort);
-    static NAN_METHOD(ClosePort);
-    static NAN_METHOD(IsPortOpen);
-
-    static NAN_METHOD(IgnoreTypes);
+    Napi::Value IgnoreTypes(const Napi::CallbackInfo &info);
 };
 
 #endif // NODE_MIDI_INPUT_H

@@ -81,9 +81,9 @@ jobs:
         run: |
           yarn
 
-          if [ -n "${{ matrix.is-native }}" ]; then
-            yarn test
-          fi
+          # if [ -n "${{ matrix.is-native }}" ]; then
+          #   yarn test
+          # fi
 
           yarn rebuild --arch=${{ matrix.arch }}
           yarn pkg-prebuilds-copy --source build/Release/$BINDING_NAME.node --name=$BINDING_NAME --strip  --napi_version=$NAPI_VERSION --arch=${{ matrix.arch }}
@@ -115,7 +115,7 @@ jobs:
             cd /work
 
             yarn
-            yarn test
+            # yarn test
 
             yarn pkg-prebuilds-copy --source build/Release/$BINDING_NAME.node --name=$BINDING_NAME --strip --napi_version=$NAPI_VERSION --arch=${{ matrix.arch }} --libc=${{ matrix.libc }}
 

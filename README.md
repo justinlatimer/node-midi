@@ -6,39 +6,19 @@ A node.js wrapper for the RtMidi C++ library that provides realtime MIDI I/O.
 RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), and Windows
 (Multimedia).
 
-[![Build Status](https://travis-ci.com/justinlatimer/node-midi.svg?branch=master)](https://travis-ci.com/github/justinlatimer/node-midi)
-
-## Prerequisites
-
-### OSX
-
-* Some version of Xcode (or Command Line Tools)
-* Python (for node-gyp)
-
-### Windows
-
-* Microsoft Visual C++ (the Express edition works fine)
-* Python (for node-gyp)
-
-### Linux
-
-* A C++ compiler
-* You must have installed and configured ALSA. Without it this module will **NOT** build.
-* Install the libasound2-dev package.
-* Python (for node-gyp)
 
 ## Installation
 
-Installation uses node-gyp and requires Python 2.7.2 or higher.
+Prebuilds are available for all common platforms. If you are using an uncommon platform you may need a C++ compiler and Python 3.
 
 From npm:
 ```bash
-$ npm install midi
+$ npm install @julusian/midi
 ```
 
 From source:
 ```bash
-$ git clone https://github.com/justinlatimer/node-midi.git
+$ git clone https://github.com/julusian/node-midi.git
 $ cd node-midi/
 $ npm install
 ```
@@ -54,7 +34,7 @@ For list of midi status codes, see http://www.midi.org/techspecs/midimessages.ph
 ### Input
 
 ```js
-const midi = require('midi');
+const midi = require('@julusian/midi');
 
 // Set up a new input.
 const input = new midi.Input();
@@ -97,7 +77,7 @@ setTimeout(function() {
 ### Output
 
 ```js
-const midi = require('midi');
+const midi = require('@julusian/midi');
 
 // Set up a new output.
 const output = new midi.Output();
@@ -126,7 +106,7 @@ connect to. This can be done simply by calling openVirtualPort(portName) instead
 of openPort(portNumber).
 
 ```js
-const midi = require('midi');
+const midi = require('@julusian/midi');
 
 // Set up a new input.
 const input = new midi.Input();
@@ -191,12 +171,13 @@ require('fs').createReadStream('something.bin').pipe(stream2);
 
 ## Maintainers
 
-  * Justin Latimer - [@justinlatimer](https://github.com/justinlatimer)
-  * Elijah Insua - [@tmpvar](https://github.com/tmpvar)
-  * Andrew Morton - [@drewish](https://github.com/drewish)
+  * Julian Waller - [@julusian](https://github.com/julusian)
 
 ## Contributors
 
+  * Justin Latimer - [@justinlatimer](https://github.com/justinlatimer)
+  * Elijah Insua - [@tmpvar](https://github.com/tmpvar)
+  * Andrew Morton - [@drewish](https://github.com/drewish)
   * Luc Deschenaux - [@luxigo](https://github.com/luxigo)
   * Michael Alyn Miller - [@malyn](https://github.com/malyn)
   * Hugo Hromic - [@hhromic](https://github.com/hhromic)
@@ -204,6 +185,7 @@ require('fs').createReadStream('something.bin').pipe(stream2);
 ## License
 
 Copyright (C) 2011-2021 by Justin Latimer.
+Copyright (C) 2022 by Julian Waller.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1,6 +1,6 @@
 {
-  "name": "midi",
-  "version": "2.0.0",
+  "name": "@julusian/midi",
+  "version": "3.0.0-0",
   "scripts": {
     "install": "pkg-prebuilds-verify ./binding-options.js || node-gyp rebuild",
     "build": "node-gyp build",
@@ -11,11 +11,15 @@
   "types": "midi.d.ts",
   "description": "MIDI hardware IO",
   "author": {
-    "name": "Justin Latimer",
-    "email": "justinlatimer@gmail.com",
-    "url": "http://www.justinlatimer.com/"
+    "name": "Julian Waller",
+    "email": "git@julusian.co.uk"
   },
   "contributors": [
+    {
+      "name": "Justin Latimer",
+      "email": "justinlatimer@gmail.com",
+      "url": "http://www.justinlatimer.com/"
+    },
     {
       "name": "Elijah Insua",
       "email": "tmpvar@gmail.com"
@@ -47,7 +51,7 @@
   },
   "dependencies": {
     "node-addon-api": "^5.0.0",
-    "pkg-prebuilds": "^0.0.2"
+    "pkg-prebuilds": "^0.1.0"
   },
   "devDependencies": {
     "mocha": "^9.0.0",
@@ -61,7 +65,7 @@
     "midi.js",
     "binding.gyp",
     "src/",
-    "test/",
-    "vendor/"
+    "vendor/",
+    "prebuilds/"
   ]
 }

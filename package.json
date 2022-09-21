@@ -1,6 +1,6 @@
 {
   "name": "@julusian/midi",
-  "version": "3.0.0-1",
+  "version": "3.0.0-2",
   "scripts": {
     "install": "pkg-prebuilds-verify ./binding-options.js || node-gyp rebuild",
     "build": "node-gyp build",
@@ -64,6 +64,7 @@
   "files": [
     "midi.js",
     "binding.gyp",
+    "binding-options.js",
     "src/",
     "vendor/rtmidi/RtMidi.cpp",
     "vendor/rtmidi/RtMidi.h",

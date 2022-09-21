@@ -63,6 +63,7 @@
   },
   "files": [
     "midi.js",
+    "midi.d.ts",
     "binding.gyp",
     "binding-options.js",
     "src/",

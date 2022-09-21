@@ -1,11 +1,12 @@
 ♪ ♫ ♩ ♬
 
-# node-midi
+# @julusian/midi
 
 A node.js wrapper for the RtMidi C++ library that provides realtime MIDI I/O.
 RtMidi supports Linux (ALSA & Jack), Macintosh OS X (CoreMidi), and Windows
 (Multimedia).
 
+This is an api compatible alternative to [midi](https://www.npmjs.com/package/midi), updated to work with modern nodejs.
 
 ## Installation
 
